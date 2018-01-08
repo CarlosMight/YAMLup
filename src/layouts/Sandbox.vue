@@ -1,10 +1,9 @@
 <template lang="pug">
-  router-view
 </template>
 
 <script>
   export default {
-    name: 'app'
+    name: 'layout-sandbox'
   }
 </script>
 
