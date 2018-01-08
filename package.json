@@ -11,6 +11,9 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "gray-matter": "^3.1.1",
+    "lockr": "^0.8.4",
+    "markdown-it": "^8.4.0",
     "normalize.css": "^7.0.0",
     "vue": "^2.5.2",
     "vue-codemirror": "^4.0.2",
