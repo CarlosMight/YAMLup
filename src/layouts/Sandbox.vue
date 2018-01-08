@@ -7,21 +7,18 @@
         :options='codemirrorOpts'
       )
     .panel
-      .content-width(v-html='preview')
+      #layout-sandbox-preview.content-width(v-html='preview')
 </template>
 
 <script>
   import matter from 'gray-matter'
   import {codemirror} from 'vue-codemirror'
   import lockr from 'lockr'
+  import markdown from '@/util/markdown'
 
   require('codemirror/lib/codemirror.css')
   require('codemirror/mode/yaml-frontmatter/yaml-frontmatter.js')
   require('codemirror/mode/gfm/gfm.js')
-
-  const markdown = require('markdown-it')({
-    html: true
-  })
 
   export default {
     name: 'layout-sandbox',
@@ -58,6 +55,8 @@
 </script>
 
 <style lang="sass">
+  @import "./src/assets/sass/variables"
+
   .vue-codemirror, .CodeMirror
     height: 100%
 
@@ -65,4 +64,20 @@
     width: 50%
     height: 100%
     float: left
+    position: relative
+    overflow: auto
+
+    &:last-child
+      box-shadow: 0 0 3px rgba(0,0,0,0.35)
+
+  #layout-sandbox-preview
+    padding: $padding-main
+
+  @media screen and (max-width: $width-content)
+    .panel
+      width: 100%
+      float: none
+      height: 50%
+
+      &:last-child
 </style>
