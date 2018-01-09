@@ -4,6 +4,7 @@ import LayoutSandbox from '@/layouts/Sandbox'
 import LayoutSingleProject from '@/layouts/SingleProject'
 import LayoutDeleteProject from '@/layouts/DeleteProject'
 import LayoutMyProjects from '@/layouts/MyProjects'
+import Layout404 from '@/layouts/404'
 
 Vue.use(Router)
 
@@ -36,6 +37,10 @@ export default new Router({
       name: 'myProjects',
       path: '/my/projects',
       component: LayoutMyProjects
+    },
+    {
+      path: '*',
+      component: Layout404
     }
   ]
 })
