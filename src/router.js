@@ -21,6 +21,12 @@ export default new Router({
       component: LayoutSingleProject
     },
     {
+      name: 'editProject',
+      path: '/p/:id/edit',
+      meta: {canSave: true},
+      component: LayoutSandbox
+    },
+    {
       name: 'myProjects',
       path: '/my/projects',
       component: LayoutMyProjects

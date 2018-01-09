@@ -11,8 +11,10 @@
           tr
             th Title
         tbody
-          tr(v-for='(project, id) in projects' :key=id @click='gotoProject(id)')
-            td {{project.parsed.data.title || 'Untitled'}}
+          tr(v-for='(project, id) in projects' :key=id)
+            td(@click='gotoProject(id)') {{project.parsed.data.title || 'Untitled'}}
+            td(@click='gotoProject(id)') View
+            td(@click='editProject(id)') Edit
 
     div(v-else)
       //- @FIXME Add a nicer message
@@ -33,9 +35,8 @@
     },
 
     methods: {
-      gotoProject (id) {
-        this.$router.push({name: 'singleProject', params: {id}})
-      }
+      gotoProject (id) { this.$router.push({name: 'singleProject', params: {id}}) },
+      editProject (id) { this.$router.push({name: 'editProject', params: {id}}) }
     }
   }
 </script>

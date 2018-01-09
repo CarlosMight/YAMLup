@@ -37,9 +37,13 @@
     },
 
     data () {
-      const autosave = lockr.get('autosave') || {}
-      const projectID = lockr.get('currentProjectID') || uuid()
-      const yaml = autosave[projectID] || ''
+      let projectID = lockr.get('currentProjectID') || uuid()
+      let yaml = lockr.get('autosave') || ''
+
+      if (this.$route.name === 'editProject') {
+        projectID = this.$route.params.id
+        yaml = lockr.get('projects')[projectID].yaml
+      }
       lockr.set('currentProjectID', projectID)
 
       return {
@@ -55,9 +59,7 @@
 
     watch: {
       yaml () {
-        const autosave = lockr.get('autosave') || {}
-        autosave[this.projectID] = this.yaml
-        lockr.set('autosave', autosave)
+        lockr.set('autosave', this.yaml)
       }
     },
 

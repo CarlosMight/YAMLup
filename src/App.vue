@@ -3,12 +3,12 @@
     nav
       .content-width
         div
-          router-link#logo(to='/')
+          router-link#logo(:to='{name: logoLink}')
             img(src='/static/img/favicon.png' height=40)
         .text-right
           router-link(v-if="showMyProjectsBtn" to='/my/projects' :class='{active: $route.name === "myProjects"}') My projects
-          button(v-if='$route.meta.canSave' @click='triggerSave') Save Locally
           button(@click='triggerNewProject') New Project
+          button(v-if='$route.meta.canSave' @click='triggerSave') Save Locally
     router-view
 </template>
 
@@ -30,6 +30,7 @@
 
     data () {
       return {
+        logoLink: lockr.get('projects') ? 'myProjects' : 'sandbox',
         showMyProjectsBtn: !!lockr.get('projects')
       }
     }
