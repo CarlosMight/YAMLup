@@ -2,20 +2,30 @@
   #app-wrap.full-height
     nav
       div
-        img(src='/static/img/favicon.png' height=40)
+        router-link(to='/')
+          img(src='/static/img/favicon.png' height=40)
       .text-right
+        router-link(v-if="showMyProjectsBtn" to='/my/projects') My projects
         button(@click='triggerSave') Save Locally
         button(@click='triggerNewProject') New Project
     router-view
 </template>
 
 <script>
+  import lockr from 'lockr'
+
   export default {
     name: 'app',
 
     methods: {
       triggerSave () { this.$bus.$emit('maybeSave') },
       triggerNewProject () { this.$bus.$emit('maybeNewProject') }
+    },
+
+    data () {
+      return {
+        showMyProjectsBtn: !!lockr.get('projects')
+      }
     }
   }
 </script>
@@ -44,13 +54,21 @@
         &:last-child
           padding: 0 $padding-main
 
-        button
+        button, a
+          color: $color-text
+          display: inline-block
+          text-decoration: none
+          line-height: $header-height - 1
+          margin-left: $margin-main
           height: 100%
           background: none
           border: none
           cursor: pointer
           border-bottom: 1px solid $color-bg
           outline: none
+
+          &:first-child
+            margin-left: 0
 
           &:hover, &:focus
             border-color: $color-links

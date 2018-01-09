@@ -12,7 +12,6 @@
       const projects = lockr.get('projects')
       const project = projects ? projects[projectID] : {}
       const html = project.html || '<h1>Sorry, this project does not exist.</h1>'
-      console.log(project)
 
       return {
         html
