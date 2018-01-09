@@ -14,6 +14,7 @@
   import matter from 'gray-matter'
   import {codemirror} from 'vue-codemirror'
   import lockr from 'lockr'
+  import uuid from 'uuid/v1'
   import markdown from '@/util/markdown'
 
   require('codemirror/lib/codemirror.css')
@@ -26,13 +27,22 @@
 
     mounted () {
       this.$refs.editor.cminstance.focus()
+      this.$bus.$on('maybeSave', this.maybeSave)
+    },
+
+    destroyed () {
+      this.$bus.$off('maybeSave', this.maybeSave)
     },
 
     data () {
-      const autosaves = lockr.get('autosave') || ['']
+      const autosave = lockr.get('autosave') || {}
+      const projectID = lockr.get('currentProjectID') || uuid()
+      const yaml = autosave[projectID] || ''
+      lockr.set('currentProjectID', projectID)
 
       return {
-        yaml: autosaves[0],
+        projectID,
+        yaml,
         codemirrorOpts: {
           mode: 'yaml-frontmatter',
           base: 'gfm',
@@ -43,13 +53,23 @@
 
     watch: {
       yaml () {
-        lockr.set('autosave', [this.yaml])
+        const autosave = lockr.get('autosave') || {}
+        autosave[this.projectID] = this.yaml
+        lockr.set('autosave', autosave)
       }
     },
 
     computed: {
       parsed () { return matter(this.yaml) },
       preview () { return markdown.render(this.parsed.content) }
+    },
+
+    methods: {
+      maybeSave () {
+        let projects = lockr.get('projects') || {}
+        projects[this.projectID] = this.yaml
+        lockr.set('projects', projects)
+      }
     }
   }
 </script>
@@ -71,7 +91,7 @@
       box-shadow: 0 0 3px rgba(0,0,0,0.35)
 
   #layout-sandbox-preview
-    padding: $padding-main
+    padding: $padding-content
 
   @media screen and (max-width: $width-content)
     .panel
