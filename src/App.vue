@@ -2,11 +2,11 @@
   #app-wrap.full-height
     nav
       div
-        router-link(to='/')
+        router-link#logo(to='/')
           img(src='/static/img/favicon.png' height=40)
       .text-right
-        router-link(v-if="showMyProjectsBtn" to='/my/projects') My projects
-        button(@click='triggerSave') Save Locally
+        router-link(v-if="showMyProjectsBtn" to='/my/projects' :class='{active: $route.name === "myProjects"}') My projects
+        button(v-if='$route.meta.canSave' @click='triggerSave') Save Locally
         button(@click='triggerNewProject') New Project
     router-view
 </template>
@@ -56,9 +56,10 @@
 
         button, a
           color: $color-text
+          padding: $padding-main
           display: inline-block
           text-decoration: none
-          line-height: $header-height - 1
+          line-height: $header-height - $padding-main * 2
           margin-left: $margin-main
           height: 100%
           background: none
@@ -70,6 +71,10 @@
           &:first-child
             margin-left: 0
 
-          &:hover, &:focus
+          &:hover, &:focus, &.active
             border-color: $color-links
+
+    #logo
+      border-bottom: none
+      padding: 0
 </style>
