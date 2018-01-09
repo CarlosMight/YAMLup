@@ -1,0 +1,29 @@
+button
+  padding: $padding-main
+  cursor: pointer
+  border: none
+  outline: none
+  border-radius: 2px
+  margin: 0 $margin-main / 2
+  background: $color-default
+  @include contrasted($color-default, #444)
+
+  &:first-child
+    margin-left: 0
+  &:last-child
+    margin-right: 0
+
+  &:hover, &:active
+    background: darken($color-default, 8%)
+
+  &.error
+    background: $color-error
+    @include contrasted($color-error)
+    &:hover, &:active
+      background: darken($color-error, 8%)
+
+  &.success
+    background: $color-success
+    @include contrasted($color-success)
+    &:hover, &:active
+      background: darken($color-success, 8%)

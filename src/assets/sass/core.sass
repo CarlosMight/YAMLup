@@ -1,0 +1,54 @@
+*
+  box-sizing: border-box
+
+html, body
+  height: 100%
+  font-size: 15px
+  line-height: 1.6em
+
+a, button
+  color: $color-links
+
+body, p
+  font-family: sans-serif
+  color: $color-text
+  line-height: 1.6em
+
+table
+  width: 100%
+  box-shadow: $box-shadow-1
+
+  th, td
+    text-align: left
+    padding: $padding-main
+
+  tbody tr:hover
+    background: darken($color-bg, 5%)
+
+h1, h2, h3, h4, h5, h6, strong, b
+  color: $color-headings
+
+h1
+  font-size: 2em
+  margin: 0 0 1em
+
+h2
+  margin: 3em 0 1em
+  padding-bottom: $padding-content
+  box-shadow: $box-shadow-1-bottom
+
+p, ul, ol
+  margin: 1em 0 0
+  padding-bottom: 1em
+  word-spacing: 0.05em
+
+ul, ol
+  padding-left: 1.5em
+
+code
+  font-size: 0.8em
+  color: $color-code
+  background: $color-code-bg
+  padding: 3px 5px
+  font-family: monospace
+  border-radius: 2px
