@@ -10,10 +10,13 @@
         thead
           tr
             th Title
+            th Created
+            th Updated
         tbody
           tr(v-for='(project, id) in projects' :key=id)
             td(@click='gotoProject(id)') {{project.parsed.data.title || 'Untitled'}}
-            td(@click='gotoProject(id)') View
+            td(@click='gotoProject(id)') {{project.created}}
+            td(@click='gotoProject(id)') {{project.updated}}
             td(@click='editProject(id)') Edit
 
     div(v-else)

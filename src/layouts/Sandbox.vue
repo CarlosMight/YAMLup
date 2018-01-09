@@ -76,7 +76,9 @@
           ID: this.projectID,
           yaml: this.yaml,
           parsed: this.parsed,
-          html: this.preview
+          html: this.preview,
+          created: projects[this.projectID] ? projects[this.projectID].created : new Date(),
+          updated: projects[this.projectID] ? new Date() : ''
         }
         lockr.set('projects', projects)
         lockr.rm('autosave')
