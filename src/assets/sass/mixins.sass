@@ -1,0 +1,12 @@
+=contrasted($bg, $dark:$color-contrast-dark, $light:$color-contrast-light)
+  background-color: $bg
+
+  // Special case for TensorPost
+  @if $bg == #42b983 or  $bg == #f66
+    color: #fff
+  @else
+    $yiq: ( (red($bg)*299) + (green($bg)*587) + (blue($bg)*114) ) / 1000
+    @if $yiq >= 128
+      color: $dark
+    @else
+      color: $light

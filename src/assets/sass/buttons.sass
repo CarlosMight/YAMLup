@@ -1,0 +1,11 @@
+button
+  padding: $padding-main
+  cursor: pointer
+  border: none
+  outline: none
+
+  &.error
+    background: $color-error
+    @include contrasted($color-error)
+    &:hover
+      background: darken($color-error, 8%)

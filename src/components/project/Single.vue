@@ -1,6 +1,5 @@
 <template lang="pug">
   .content-padding.content-width(v-html='html')
-    h1 test
 </template>
 
 <script>

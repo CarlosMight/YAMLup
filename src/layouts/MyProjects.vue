@@ -17,7 +17,8 @@
             td(@click='gotoProject(id)') {{project.parsed.data.title || 'Untitled'}}
             td(@click='gotoProject(id)') {{project.created}}
             td(@click='gotoProject(id)') {{project.updated}}
-            td(@click='editProject(id)') Edit
+            td.delete(@click='deleteProject(id)') Delete
+            td.edit(@click='editProject(id)') Edit
 
     div(v-else)
       //- @FIXME Add a nicer message
@@ -39,7 +40,8 @@
 
     methods: {
       gotoProject (id) { this.$router.push({name: 'singleProject', params: {id}}) },
-      editProject (id) { this.$router.push({name: 'editProject', params: {id}}) }
+      editProject (id) { this.$router.push({name: 'editProject', params: {id}}) },
+      deleteProject (id) { this.$router.push({name: 'deleteProject', params: {id}}) }
     }
   }
 </script>
@@ -49,4 +51,20 @@
 
   table tbody tr
     cursor: pointer
+
+  td.edit
+    color: $color-success
+    font-weight: bold
+
+    &:hover
+      background: $color-success
+      color: #fff
+
+  td.delete
+    color: $color-error
+    font-weight: bold
+
+    &:hover
+      background: $color-error
+      color: #fff
 </style>

@@ -1,0 +1,29 @@
+blockquote
+  margin: 2em 0
+  padding-left: $padding-content
+  border-left: 4px solid $color-success
+
+  p:first-child
+    margin-top: 0
+  p:last-child
+    margin-bottom: 0
+
+  &.warning
+    background: #f8f8f8
+    border-color: $color-error
+    padding: $padding-main
+    padding-left: $padding-content
+    position: relative
+
+    &:before
+      content: '!'
+      position: absolute
+      top: $padding-main
+      left: -.85em
+      background: $color-error
+      color: #fff
+      width: 1.5em
+      height: 1.5em
+      border-radius: 1.5em
+      text-align: center
+      font-weight: bold
