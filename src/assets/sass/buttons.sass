@@ -21,3 +21,9 @@ button
     @include contrasted($color-error)
     &:hover, &:active
       background: darken($color-error, 8%)
+
+  &.success
+    background: $color-success
+    @include contrasted($color-success)
+    &:hover, &:active
+      background: darken($color-success, 8%)

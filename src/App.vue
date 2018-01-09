@@ -7,10 +7,14 @@
             img(src='/static/img/favicon.png' height=40)
         .text-right
           router-link(to='/my/projects' :class='{active: $route.name === "myProjects"}') My projects
-          button(v-if='isButtonVisible("delete")' @click='deleteProject') Delete Project
-          button(v-if='isButtonVisible("edit")' @click='editProject') Edit Project
-          button(@click='triggerNewProject') New Project
-          button(v-if='$route.meta.canSave' @click='triggerSave') Save Locally
+          button.error(v-if='isButtonVisible("delete")' @click='deleteProject')
+            i.icon-bin2
+          button.success(v-if='isButtonVisible("edit")' @click='editProject')
+            i.icon-pencil
+          button(@click='triggerNewProject')
+            i.icon-file-empty
+          button.success(v-if='$route.meta.canSave' @click='triggerSave')
+            i.icon-floppy-disk
     router-view
 </template>
 
@@ -99,8 +103,15 @@
         border-bottom: 1px solid $color-bg
         outline: none
 
-        &:first-child
-          margin-left: 0
+        &.error
+          color: $color-error
+          &:hover
+            border-color: $color-error
+
+        &.success
+          color: $color-success
+          &:hover
+            border-color: $color-success
 
         &:hover, &:focus, &.active
           border-color: $color-links

@@ -7,3 +7,7 @@ yarn.lock
 
 /build/
 /config/
+
+static/icomoon/demo-files/
+static/icomoon/demo.html
+static/icomoon/Read Me.txt

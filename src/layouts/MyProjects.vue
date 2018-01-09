@@ -17,8 +17,9 @@
             td(@click='gotoProject(id)') {{project.parsed.data.title || 'Untitled'}}
             td(@click='gotoProject(id)') {{project.created}}
             td(@click='gotoProject(id)') {{project.updated}}
-            td.delete(@click='deleteProject(id)') Delete
-            td.edit(@click='editProject(id)') Edit
+            td.text-right
+              button.edit(@click='editProject(id)') Edit
+              button.error.delete(@click='deleteProject(id)') Delete
 
     div(v-else)
       //- @FIXME Add a nicer message
