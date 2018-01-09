@@ -9,6 +9,7 @@
           router-link(v-if="showMyProjectsBtn" to='/my/projects' :class='{active: $route.name === "myProjects"}') My projects
           button(@click='triggerNewProject') New Project
           button(v-if='$route.meta.canSave' @click='triggerSave') Save Locally
+          button(v-if='$route.name === "singleProject"' @click='editProject') Edit Project
     router-view
 </template>
 
@@ -25,6 +26,10 @@
         lockr.set('currentProjectID', uuid())
         this.$bus.$emit('maybeNewProject')
         this.$router.push({name: 'sandbox'})
+      },
+      editProject () {
+        const id = this.$route.params.id
+        this.$router.push({name: 'editProject', data: {id}})
       }
     },
 
