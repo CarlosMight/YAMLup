@@ -10,11 +10,13 @@ export default new Router({
   mode: 'history',
   routes: [
     {
+      name: 'sandbox',
       path: '/',
       meta: {canSave: true},
       component: LayoutSandbox
     },
     {
+      name: 'singleProject',
       path: '/p/:id',
       component: LayoutSingleProject
     },

@@ -1,25 +1,31 @@
 <template lang="pug">
   #app-wrap.full-height
     nav
-      div
-        router-link#logo(to='/')
-          img(src='/static/img/favicon.png' height=40)
-      .text-right
-        router-link(v-if="showMyProjectsBtn" to='/my/projects' :class='{active: $route.name === "myProjects"}') My projects
-        button(v-if='$route.meta.canSave' @click='triggerSave') Save Locally
-        button(@click='triggerNewProject') New Project
+      .content-width
+        div
+          router-link#logo(to='/')
+            img(src='/static/img/favicon.png' height=40)
+        .text-right
+          router-link(v-if="showMyProjectsBtn" to='/my/projects' :class='{active: $route.name === "myProjects"}') My projects
+          button(v-if='$route.meta.canSave' @click='triggerSave') Save Locally
+          button(@click='triggerNewProject') New Project
     router-view
 </template>
 
 <script>
   import lockr from 'lockr'
+  import uuid from 'uuid/v1'
 
   export default {
     name: 'app',
 
     methods: {
       triggerSave () { this.$bus.$emit('maybeSave') },
-      triggerNewProject () { this.$bus.$emit('maybeNewProject') }
+      triggerNewProject () {
+        lockr.set('currentProjectID', uuid())
+        this.$bus.$emit('maybeNewProject')
+        this.$router.push({name: 'sandbox'})
+      }
     },
 
     data () {
@@ -45,34 +51,37 @@
       width: 100%
       box-shadow: 0 0 3px rgba(0,0,0,0.35)
       background: #fff
-      display: flex
 
       > div
-        flex: 1 1 100%
-        padding: $padding-main
+        display: flex
+        height: 100%
 
-        &:last-child
-          padding: 0 $padding-main
-
-        button, a
-          color: $color-text
+        > div
+          flex: 1 1 100%
           padding: $padding-main
-          display: inline-block
-          text-decoration: none
-          line-height: $header-height - $padding-main * 2
-          margin-left: $margin-main
-          height: 100%
-          background: none
-          border: none
-          cursor: pointer
-          border-bottom: 1px solid $color-bg
-          outline: none
 
-          &:first-child
-            margin-left: 0
+          &:last-child
+            padding: 0 $padding-main
 
-          &:hover, &:focus, &.active
-            border-color: $color-links
+      button, a
+        color: $color-text
+        padding: $padding-main
+        display: inline-block
+        text-decoration: none
+        line-height: $header-height - $padding-main * 2
+        margin-left: $margin-main
+        height: 100%
+        background: none
+        border: none
+        cursor: pointer
+        border-bottom: 1px solid $color-bg
+        outline: none
+
+        &:first-child
+          margin-left: 0
+
+        &:hover, &:focus, &.active
+          border-color: $color-links
 
     #logo
       border-bottom: none
