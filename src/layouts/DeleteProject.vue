@@ -8,6 +8,7 @@
           | Clicking delete here will delete the project.
           b  There is currently no undo!
       p
+        button(@click='cancelDelete') Cancel
         button.error(@click='deleteProject') Delete
     div(v-else)
       //- @TODO Add a nicer message
@@ -32,9 +33,16 @@
     methods: {
       deleteProject () {
         let projects = lockr.get('projects')
+
         delete projects[this.$route.params.id]
         lockr.set('projects', projects)
+
         this.$router.push({name: 'myProjects'})
+      },
+
+      cancelDelete () {
+        const id = this.$route.params.id
+        this.$router.push({name: 'singleProject', params: {id}})
       }
     }
   }

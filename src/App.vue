@@ -1,15 +1,16 @@
 <template lang="pug">
   #app-wrap.full-height
     nav
-      .content-width
+      div
         div
           router-link#logo(:to='{name: logoLink}')
             img(src='/static/img/favicon.png' height=40)
         .text-right
-          router-link(v-if="showMyProjectsBtn" to='/my/projects' :class='{active: $route.name === "myProjects"}') My projects
+          router-link(to='/my/projects' :class='{active: $route.name === "myProjects"}') My projects
+          button(v-if='isButtonVisible("delete")' @click='deleteProject') Delete Project
+          button(v-if='isButtonVisible("edit")' @click='editProject') Edit Project
           button(@click='triggerNewProject') New Project
           button(v-if='$route.meta.canSave' @click='triggerSave') Save Locally
-          button(v-if='$route.name === "singleProject"' @click='editProject') Edit Project
     router-view
 </template>
 
@@ -20,23 +21,38 @@
   export default {
     name: 'app',
 
+    data () {
+      return {
+        logoLink: lockr.get('projects') ? 'myProjects' : 'sandbox'
+      }
+    },
+
     methods: {
+      isButtonVisible (btnID) {
+        switch (btnID) {
+          case 'delete': return ['singleProject', 'editProject'].includes(this.$route.name)
+          case 'edit': return this.$route.name === 'singleProject'
+        }
+
+        return false
+      },
+
       triggerSave () { this.$bus.$emit('maybeSave') },
+
       triggerNewProject () {
         lockr.set('currentProjectID', uuid())
         this.$bus.$emit('maybeNewProject')
         this.$router.push({name: 'sandbox'})
       },
+
       editProject () {
         const id = this.$route.params.id
         this.$router.push({name: 'editProject', data: {id}})
-      }
-    },
+      },
 
-    data () {
-      return {
-        logoLink: lockr.get('projects') ? 'myProjects' : 'sandbox',
-        showMyProjectsBtn: !!lockr.get('projects')
+      deleteProject () {
+        const id = this.$route.params.id
+        this.$router.push({name: 'deleteProject', data: {id}})
       }
     }
   }

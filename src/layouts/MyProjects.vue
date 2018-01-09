@@ -1,5 +1,5 @@
 <template lang="pug">
-  .container
+  .container.wide
     div(v-if='projects || autosave')
       h1 My projects
 

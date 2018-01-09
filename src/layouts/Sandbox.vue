@@ -100,6 +100,7 @@
 
   .vue-codemirror, .CodeMirror
     height: 100%
+    font-size: 13px
 
   .panel
     width: 50%
@@ -111,7 +112,7 @@
     &:last-child
       box-shadow: 0 0 3px rgba(0,0,0,0.35)
 
-  @media screen and (max-width: $width-content)
+  @media screen and (max-width: $width-content * 1.5)
     .panel
       width: 100%
       float: none
