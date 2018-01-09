@@ -77,14 +77,15 @@
           html: this.preview
         }
         lockr.set('projects', projects)
+        lockr.rm('autosave')
 
         this.$router.push(`/p/${projectID}`)
       },
 
       maybeNewProject () {
+        this.yaml = ''
         this.projectID = uuid()
         lockr.set('currentProjectID', this.projectID)
-        this.yaml = ''
       }
     }
   }
