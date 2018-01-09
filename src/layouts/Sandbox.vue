@@ -28,10 +28,12 @@
     mounted () {
       this.$refs.editor.cminstance.focus()
       this.$bus.$on('maybeSave', this.maybeSave)
+      this.$bus.$on('maybeNewProject', this.maybeNewProject)
     },
 
     destroyed () {
       this.$bus.$off('maybeSave', this.maybeSave)
+      this.$bus.$off('maybeNewProject', this.maybeNewProject)
     },
 
     data () {
@@ -69,6 +71,12 @@
         let projects = lockr.get('projects') || {}
         projects[this.projectID] = this.yaml
         lockr.set('projects', projects)
+      },
+
+      maybeNewProject () {
+        this.projectID = uuid()
+        lockr.set('currentProjectID', this.projectID)
+        this.yaml = ''
       }
     }
   }

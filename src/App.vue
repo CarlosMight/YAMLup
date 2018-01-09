@@ -5,6 +5,7 @@
         img(src='/static/img/favicon.png' height=40)
       .text-right
         button(@click='triggerSave') Save Locally
+        button(@click='triggerNewProject') New Project
     router-view
 </template>
 
@@ -13,9 +14,8 @@
     name: 'app',
 
     methods: {
-      triggerSave () {
-        this.$bus.$emit('maybeSave')
-      }
+      triggerSave () { this.$bus.$emit('maybeSave') },
+      triggerNewProject () { this.$bus.$emit('maybeNewProject') }
     }
   }
 </script>
