@@ -7,7 +7,7 @@
         :options='codemirrorOpts'
       )
     .panel
-      #layout-sandbox-preview.content-width(v-html='preview')
+      project-single(:html='preview')
 </template>
 
 <script>
@@ -68,9 +68,17 @@
 
     methods: {
       maybeSave () {
+        const projectID = this.projectID
         let projects = lockr.get('projects') || {}
-        projects[this.projectID] = this.yaml
+        projects[this.projectID] = {
+          ID: this.projectID,
+          yaml: this.yaml,
+          parsed: this.parsed,
+          html: this.preview
+        }
         lockr.set('projects', projects)
+
+        this.$router.push(`/p/${projectID}`)
       },
 
       maybeNewProject () {
@@ -97,9 +105,6 @@
 
     &:last-child
       box-shadow: 0 0 3px rgba(0,0,0,0.35)
-
-  #layout-sandbox-preview
-    padding: $padding-content
 
   @media screen and (max-width: $width-content)
     .panel

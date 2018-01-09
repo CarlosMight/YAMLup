@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from '@/App'
 import router from '@/router'
 import EventBus from '@/util/bus'
+import PostSingle from '@/components/project/Single'
 
 Vue.config.productionTip = false
 Object.defineProperties(Vue.prototype, {
@@ -11,6 +12,8 @@ Object.defineProperties(Vue.prototype, {
     get: () => EventBus
   }
 })
+
+Vue.component('project-single', PostSingle)
 
 /* eslint-disable no-new */
 new Vue({
