@@ -6,7 +6,7 @@ import router from '@/router.js'
 import EventBus from '@/util/bus'
 import PostSingle from '@/components/project/Single'
 
-window.d3 = require('d3')
+require('@/util/sandbox')
 
 Vue.config.productionTip = false
 Object.defineProperties(Vue.prototype, {
