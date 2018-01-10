@@ -1,8 +1,8 @@
 <template lang="pug">
   .container.wide
-    div(v-if='projects || autosave')
-      h1 My projects
+    h1 My projects
 
+    div(v-if='projects || autosave')
       p(v-if='autosave')
         router-link(:to='{name: "sandbox"}') You have an active autosave
 
@@ -27,7 +27,8 @@
 
     div(v-else)
       //- @FIXME Add a nicer message
-      h1 Whoops, looks like you don't have any projects!
+      blockquote.warning
+        p Whoops, it looks like you don't have any projects!
 </template>
 
 <script>
