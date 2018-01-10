@@ -1,8 +1,8 @@
 <template lang="pug">
   .container.wide
-    div(v-if='projects || autosave')
-      h1 My projects
+    h1 My projects
 
+    div(v-if='projects || autosave')
       p(v-if='autosave')
         router-link(:to='{name: "sandbox"}') You have an active autosave
 
@@ -21,9 +21,14 @@
               button.edit(@click='editProject(id)') Edit
               button.error.delete(@click='deleteProject(id)') Delete
 
+      h2 Settings
+      p
+        router-link.button.error(:to='{name: "deleteAllProjects"}') Delete all projects
+
     div(v-else)
       //- @FIXME Add a nicer message
-      h1 Whoops, looks like you don't have any projects!
+      blockquote.warning
+        p Whoops, it looks like you don't have any projects!
 </template>
 
 <script>

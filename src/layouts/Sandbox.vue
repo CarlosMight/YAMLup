@@ -7,6 +7,8 @@
         :options='codemirrorOpts'
       )
     .panel
+      .error-message(v-if='errorMessage')
+        pre {{errorMessage}}
       project-single(:html='preview')
 </template>
 
@@ -16,6 +18,7 @@
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
   import markdown from '@/util/markdown'
+  window.matter = matter
 
   require('codemirror/lib/codemirror.css')
   require('codemirror/mode/yaml-frontmatter/yaml-frontmatter.js')
@@ -49,22 +52,35 @@
       return {
         projectID,
         yaml,
+        errorMessage: false,
+        lastValidParse: matter(''),
         codemirrorOpts: {
           mode: 'yaml-frontmatter',
           base: 'gfm',
-          lineWrapping: true
+          lineWrapping: true,
+          lineNumbers: true
         }
       }
     },
 
-    watch: {
-      yaml () {
-        lockr.set('autosave', this.yaml)
-      }
-    },
-
     computed: {
-      parsed () { return matter(this.yaml) },
+      parsed () {
+        let yaml
+
+        try {
+          yaml = matter(this.yaml)
+          this.errorMessage = false
+        } catch (e) {
+          this.errorMessage = e.message
+        }
+
+        if (!this.errorMessage) {
+          this.lastValidParse = yaml
+          lockr.set('autosave', this.yaml)
+        }
+
+        return this.lastValidParse
+      },
       preview () { return markdown.render(this.parsed.content) }
     },
 
@@ -75,7 +91,7 @@
         projects[this.projectID] = {
           ID: this.projectID,
           yaml: this.yaml,
-          parsed: this.parsed,
+          parsed: this.lastValidParse,
           html: this.preview,
           created: projects[this.projectID] ? projects[this.projectID].created : new Date(),
           updated: projects[this.projectID] ? new Date() : ''
@@ -111,6 +127,35 @@
 
     &:last-child
       box-shadow: 0 0 3px rgba(0,0,0,0.35)
+
+    &.has-errors
+      border: 1px solid red
+
+  .error-message
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    border: 2px solid $color-text
+    padding: $padding-content
+
+    pre
+      position: relative
+      font-size: 1em
+      font-family: $font-mono
+      font-weight: bold
+      color: #fff
+
+    &:before
+      content: ''
+      background: $color-text
+      opacity: 0.9
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
 
   @media screen and (max-width: $width-content * 1.5)
     .panel
