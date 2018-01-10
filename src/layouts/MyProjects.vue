@@ -1,6 +1,6 @@
 <template lang="pug">
   .container.wide
-    h1 My projects
+    h1 My Projects
 
     div(v-if='projects || autosave')
       p(v-if='autosave')
