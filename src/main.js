@@ -6,6 +6,8 @@ import router from '@/router.js'
 import EventBus from '@/util/bus'
 import PostSingle from '@/components/project/Single'
 
+require('@/util/sandbox')
+
 Vue.config.productionTip = false
 Object.defineProperties(Vue.prototype, {
   $bus: {
