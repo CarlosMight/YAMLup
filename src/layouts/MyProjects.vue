@@ -21,6 +21,10 @@
               button.edit(@click='editProject(id)') Edit
               button.error.delete(@click='deleteProject(id)') Delete
 
+      h2 Settings
+      p
+        router-link.button.error(:to='{name: "deleteAllProjects"}') Delete all projects
+
     div(v-else)
       //- @FIXME Add a nicer message
       h1 Whoops, looks like you don't have any projects!
