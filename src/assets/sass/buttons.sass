@@ -9,6 +9,9 @@ button, .button
   text-decoration: none
   @include contrasted($color-default, #444)
 
+  &.disabled, [disabled]
+    opacity: 0.8
+
   &:first-child
     margin-left: 0
   &:last-child
