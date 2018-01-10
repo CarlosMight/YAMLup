@@ -26,6 +26,7 @@
   require('codemirror/mode/css/css.js')
   require('codemirror/mode/javascript/javascript.js')
   require('codemirror/mode/htmlmixed/htmlmixed.js')
+  require('codemirror/keymap/sublime.js')
 
   export default {
     name: 'layout-sandbox',
@@ -62,7 +63,8 @@
           base: 'gfm',
           lineWrapping: true,
           lineNumbers: true,
-          tabSize: 2
+          tabSize: 2,
+          keyMap: 'sublime'
         }
       }
     },
