@@ -7,7 +7,9 @@
 
     p
       b Login with<sup>*</sup>&nbsp;
-      button(@click='twitterLogin') Twitter
+      button.twitter-button(@click='twitterLogin')
+        i.icon-twitter
+        |  Twitter
 
     p
       small <sup>*</sup> More login providers coming soon
@@ -15,9 +17,28 @@
 
 <script>
   import firebase from '@/service/firebase'
+  import {mapState} from 'vuex'
 
   export default {
     name: 'layout-login',
+
+    watch: {
+      user (user) {
+        if (user) {
+          this.$router.push({name: 'myProjects'})
+        }
+      }
+    },
+
+    mounted () {
+      if (this.user) {
+        this.$router.push({name: 'myProjects'})
+      }
+    },
+
+    computed: mapState([
+      'user'
+    ]),
 
     methods: {
       twitterLogin () {
@@ -29,6 +50,7 @@
           // @TODO We should make stay connected opt-in: https://firebase.google.com/docs/auth/web/auth-state-persistence
           .then((result) => {
             this.$store.commit('setUser', result.user)
+            this.$router.push({name: 'myProjects'})
           })
           // @TODO Let's toast the error message (test by turning off connection or temp disabling authorized domains)
           .catch((err) => {
@@ -36,7 +58,6 @@
           })
           .then(() => {
             this.isLoading = false
-            this.$router.push({name: 'myProjects'})
           })
       }
     }
