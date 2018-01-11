@@ -69,7 +69,7 @@
     padding-top: $header-height
 
     > nav
-      position: absolute
+      position: fixed
       z-index: 100
       top: 0
       left: 0
