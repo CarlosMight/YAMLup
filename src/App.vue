@@ -6,7 +6,9 @@
           router-link#logo(:to='{name: logoLink}')
             img(src='/static/img/favicon.png' height=40)
         .text-right
-          router-link(to='/my/projects' :class='{active: $route.name === "myProjects"}') My projects
+          router-link(to='/my/projects' :class='{active: $route.name === "myProjects"}')
+            img.avatar(:src='user.photoURL')
+            span My projects
           button.error(v-if='isButtonVisible("delete")' @click='deleteProject')
             i.icon-bin2
           button.success(v-if='isButtonVisible("edit")' @click='editProject')
@@ -15,13 +17,15 @@
             i.icon-file-empty
           button.success(v-if='$route.meta.canSave' @click='triggerSave')
             i.icon-floppy-disk
-          router-link.success(to='/login') Login
+          router-link.success(v-if='!user.uid' to='/login') Login
+          router-link(v-else to='/logout') Logout
     router-view
 </template>
 
 <script>
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
+  import {mapState} from 'vuex'
 
   export default {
     name: 'app',
@@ -31,6 +35,10 @@
         logoLink: lockr.get('projects') ? 'myProjects' : 'sandbox'
       }
     },
+
+    computed: mapState([
+      'user'
+    ]),
 
     methods: {
       isButtonVisible (btnID) {
@@ -103,6 +111,11 @@
         cursor: pointer
         border-bottom: 1px solid $color-bg
         outline: none
+
+        img
+          display: inline-block
+          height: 100%
+          margin-right: $margin-main
 
         &.error
           color: $color-error

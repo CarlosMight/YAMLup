@@ -11,6 +11,7 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "firebase": "^4.8.1",
     "gray-matter": "^3.1.1",
     "lockr": "^0.8.4",
     "markdown-it": "^8.4.0",
@@ -18,7 +19,8 @@
     "uuid": "^3.1.0",
     "vue": "^2.5.2",
     "vue-codemirror": "^4.0.2",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.5",

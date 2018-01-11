@@ -1,6 +1,10 @@
 <template lang="pug">
   .container.wide
-    h1 My Projects
+    h1#title
+      span(v-if='user.uid')
+        img( :src='user.photoURL')
+        span {{user.displayName}}'s Projects
+      span(v-else) My Projects
 
     div(v-if='projects || autosave')
       p(v-if='autosave')
@@ -33,6 +37,7 @@
 
 <script>
   import lockr from 'lockr'
+  import {mapState} from 'vuex'
 
   export default {
     name: 'layout-my-projects',
@@ -44,6 +49,10 @@
       }
     },
 
+    computed: mapState([
+      'user'
+    ]),
+
     methods: {
       gotoProject (id) { this.$router.push({name: 'singleProject', params: {id}}) },
       editProject (id) { this.$router.push({name: 'editProject', params: {id}}) },
@@ -54,6 +63,10 @@
 
 <style lang="sass">
   @import "./src/assets/sass/variables"
+
+  #title
+    img
+      margin-right: $margin-main
 
   table tbody tr
     cursor: pointer

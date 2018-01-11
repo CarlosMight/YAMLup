@@ -6,6 +6,7 @@ import LayoutDeleteProject from '@/layouts/DeleteProject'
 import LayoutDeleteAllProjects from '@/layouts/DeleteAllProjects'
 import LayoutMyProjects from '@/layouts/MyProjects'
 import LayoutLogin from '@/layouts/Login'
+import LayoutLogout from '@/layouts/Logout'
 import Layout404 from '@/layouts/404'
 
 Vue.use(Router)
@@ -49,6 +50,11 @@ export default new Router({
       name: 'login',
       path: '/login',
       component: LayoutLogin
+    },
+    {
+      name: 'logout',
+      path: '/logout',
+      component: LayoutLogout
     },
     {
       path: '*',
