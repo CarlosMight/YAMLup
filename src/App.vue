@@ -15,6 +15,7 @@
             i.icon-file-empty
           button.success(v-if='$route.meta.canSave' @click='triggerSave')
             i.icon-floppy-disk
+          router-link.success(to='/login') Login
     router-view
 </template>
 
