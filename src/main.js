@@ -6,6 +6,7 @@ import router from '@/router.js'
 import EventBus from '@/util/bus'
 import PostSingle from '@/components/project/Single'
 import Spinner from '@/components/Spinner'
+import Toasted from 'vue-toasted'
 import store from '@/store'
 
 require('@/util/sandbox')
@@ -16,6 +17,8 @@ Object.defineProperties(Vue.prototype, {
     get: () => EventBus
   }
 })
+
+Vue.use(Toasted)
 
 Vue.component('project-single', PostSingle)
 Vue.component('spinner', Spinner)

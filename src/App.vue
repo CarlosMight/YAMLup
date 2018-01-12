@@ -21,14 +21,11 @@
           router-link.success(v-if='!user.uid' :to='{name: "login"}') Login
           router-link(v-else :to='{name: "logout"}') Logout
     router-view
-
-    modal-sync-projects
 </template>
 
 <script>
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
-  import ModalSyncProjects from '@/components/modal/SyncProjects'
   import NotificationButton from '@/components/notification/Button'
   import {mapState} from 'vuex'
 
@@ -36,7 +33,6 @@
     name: 'app',
 
     components: {
-      'modal-sync-projects': ModalSyncProjects,
       'notification-button': NotificationButton
     },
 

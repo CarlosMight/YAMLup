@@ -25,9 +25,12 @@
         tbody
           tr(v-for='(project, id) in projects' :key=id)
             td(@click='gotoProject(id)') {{project.parsed.data.title || 'Untitled'}}
-            td(@click='gotoProject(id)') {{project.created}}
-            td(@click='gotoProject(id)') {{project.updated}}
+            td(@click='gotoProject(id)') {{formatDate(project.created)}}
+            td(@click='gotoProject(id)') {{formatDate(project.updated)}}
             td.text-right
+              button.success(@click='syncProject(id, $event)')
+                i.icon-spinner5.loader
+                span Sync
               button.edit(@click='editProject(id)') Edit
               button.error.delete(@click='deleteProject(id)') Delete
 
@@ -44,6 +47,8 @@
 <script>
   import lockr from 'lockr'
   import {mapState} from 'vuex'
+  import TimeAgo from 'timeago.js'
+  const timeago = TimeAgo()
 
   export default {
     name: 'layout-my-projects',
@@ -63,7 +68,17 @@
     methods: {
       gotoProject (id) { this.$router.push({name: 'singleProject', params: {id}}) },
       editProject (id) { this.$router.push({name: 'editProject', params: {id}}) },
-      deleteProject (id) { this.$router.push({name: 'deleteProject', params: {id}}) }
+      deleteProject (id) { this.$router.push({name: 'deleteProject', params: {id}}) },
+
+      formatDate: (date) => timeago.format(date),
+
+      syncProject (id, ev) {
+        let btn = ev.target
+
+        if (!btn.classList.contains('loading')) {
+          btn.classList.add('loading')
+        }
+      }
     }
   }
 </script>

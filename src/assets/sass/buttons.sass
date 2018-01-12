@@ -9,6 +9,20 @@ button, .button
   text-decoration: none
   @include contrasted($color-default, #444)
 
+  .loader
+    display: none
+    font-size: 1em
+    pointer-events: none
+
+    + span
+      pointer-events: none
+
+  &.loading
+    .loader
+      display: inline-block
+    span
+      display: none
+
   &.disabled, [disabled]
     opacity: 0.8
 

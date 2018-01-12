@@ -20,14 +20,4 @@
 
 
 <style lang="sass">
-  @keyframes anim-rotate
-    0%
-      transform: rotate(0)
-    100%
-      transform: rotate(360deg)
-
-  .icon-spinner5
-    animation: anim-rotate 1s infinite linear
-    display: inline-block
-    font-size: 2rem
 </style>
