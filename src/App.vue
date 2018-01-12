@@ -6,6 +6,8 @@
           router-link#logo(:to='{name: logoLink}')
             img(src='/static/img/favicon.png' height=40)
         .text-right
+          router-link.error(v-if='notifications.length' to='/notifications')
+            i.icon-bell
           router-link(to='/my/projects' :class='{active: $route.name === "myProjects"}')
             img.avatar(:src='user.photoURL')
             span My projects
@@ -20,15 +22,22 @@
           router-link.success(v-if='!user.uid' to='/login') Login
           router-link(v-else to='/logout') Logout
     router-view
+
+    modal-sync-projects(v-if='notifications.syncProjects')
 </template>
 
 <script>
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
+  import ModalSyncProjects from '@/components/modal/SyncProjects'
   import {mapState} from 'vuex'
 
   export default {
     name: 'app',
+
+    components: {
+      'modal-sync-projects': ModalSyncProjects
+    },
 
     data () {
       return {
@@ -37,7 +46,8 @@
     },
 
     computed: mapState([
-      'user'
+      'user',
+      'notifications'
     ]),
 
     methods: {
@@ -129,6 +139,10 @@
 
         &:hover, &:focus, &.active
           border-color: $color-links
+          &.error
+            border-color: $color-error
+          &.success
+            border-color: $color-success
 
     #logo
       border-bottom: none

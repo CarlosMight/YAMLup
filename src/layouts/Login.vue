@@ -1,7 +1,7 @@
 <template lang="pug">
   .container
     h1 Login
-    blockquote.warning
+    blockquote.error
       p Thanks for your interest in YAMLup! I'm still developing this app to use myself and nothing is really finalized. I super recommend <b>not</b> using this app yet.
       p - <a href="https://twitter.com/carlosmight">Carlos Ramos</a>
 
@@ -24,14 +24,14 @@
 
     watch: {
       user (user) {
-        if (user) {
+        if (user && user.uid) {
           this.$router.push({name: 'myProjects'})
         }
       }
     },
 
     mounted () {
-      if (this.user) {
+      if (this.user.uid) {
         this.$router.push({name: 'myProjects'})
       }
     },

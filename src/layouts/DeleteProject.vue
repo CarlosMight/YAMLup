@@ -2,7 +2,7 @@
   .container
     div(v-if='project')
       h1 Delete Project
-      blockquote.warning
+      blockquote.error
         b WARNING!
         p
           | Clicking delete here will delete the project.

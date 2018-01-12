@@ -7,7 +7,16 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     // Firebase user data
-    user: {}
+    user: {},
+
+    /**
+     * Use for queuing notifications
+     * - Root elements are namespace
+     * - Roots must have a messages {ARR} prop, which contains each message object
+     * - Message objects are in the form {short, message, link}
+     * @type {Object}
+     */
+    notifications: {}
   },
 
   mutations: {

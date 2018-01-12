@@ -31,7 +31,7 @@
 
     div(v-else)
       //- @FIXME Add a nicer message
-      blockquote.warning
+      blockquote.error
         p Whoops, it looks like you don't have any projects!
 </template>
 

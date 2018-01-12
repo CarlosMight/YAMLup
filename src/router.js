@@ -5,6 +5,7 @@ import LayoutSingleProject from '@/layouts/SingleProject'
 import LayoutDeleteProject from '@/layouts/DeleteProject'
 import LayoutDeleteAllProjects from '@/layouts/DeleteAllProjects'
 import LayoutMyProjects from '@/layouts/MyProjects'
+import LayoutNotifications from '@/layouts/Notifications'
 import LayoutLogin from '@/layouts/Login'
 import LayoutLogout from '@/layouts/Logout'
 import Layout404 from '@/layouts/404'
@@ -40,6 +41,11 @@ export default new Router({
       name: 'myProjects',
       path: '/my/projects',
       component: LayoutMyProjects
+    },
+    {
+      name: 'notifications',
+      path: '/notifications',
+      component: LayoutNotifications
     },
     {
       name: 'deleteAllProjects',
