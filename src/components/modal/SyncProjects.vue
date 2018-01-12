@@ -1,5 +1,5 @@
 <template lang="pug">
-  .modal-wrap
+  .modal-wrap(v-if='notifications.syncProjects')
     .modal
       h1 Syncs Available
       table

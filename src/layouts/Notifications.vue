@@ -1,8 +1,14 @@
 <template lang="pug">
   .container.wide
     h1 Notifications
-    blockquote.success
+
+    blockquote.success(v-if='!notifications.messages')
       p All notifications read!
+
+    table(v-else)
+      tr(v-for='(message, key) in notifications.messages' :key='key')
+        td.cursor-pointer(@click='triggerNotification(key)')
+          blockquote.no-margin(v-html='message.message' :class='message.wrap')
 </template>
 
 <script>
@@ -14,7 +20,14 @@
     computed: mapState([
       'user',
       'notifications'
-    ])
+    ]),
+
+    methods: {
+      triggerNotification (key) {
+        let msg = this.notifications.messages[key]
+        if (msg.route) this.$router.push(msg.route)
+      }
+    }
   }
 </script>
 

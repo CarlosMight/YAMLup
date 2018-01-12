@@ -11,12 +11,12 @@ const store = new Vuex.Store({
 
     /**
      * Use for queuing notifications
-     * - Root elements are namespace
-     * - Roots must have a messages {ARR} prop, which contains each message object
-     * - Message objects are in the form {short, message, link}
-     * @type {Object}
+     * - Message objects are in the form {id, message, route}
+     * @see '/components/notifications/Button'
      */
-    notifications: {}
+    notifications: {
+      messages: {}
+    }
   },
 
   mutations: {
@@ -34,6 +34,20 @@ const store = new Vuex.Store({
       state.checklist = null
       firebase.auth().signOut()
       localStorage.clear()
+    },
+
+    /**
+     * Adds a notification to the queue
+     * @param {OBJ} state
+     * @param {OBJ} notification The notifcation object,
+     * {
+     *   id,      {STR} The message ID
+     *   message, {STR} The message
+     *   route     {STR} The route
+     * }
+     */
+    addNotification (state, notification) {
+      state.notifications.messages[notification.id] = notification
     }
   }
 })

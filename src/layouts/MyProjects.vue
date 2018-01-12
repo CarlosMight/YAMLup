@@ -10,6 +10,10 @@
       p(v-if='autosave')
         router-link(:to='{name: "sandbox"}') You have an active autosave
 
+      h2 Offline <sup>*</sup>
+      p
+        small <sup>*</sup> The following are not synced to any account, and will be cleared when you logout.
+
       table
         thead
           tr
