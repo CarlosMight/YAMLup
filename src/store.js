@@ -14,7 +14,9 @@ const store = new Vuex.Store({
      * - Message objects are in the form {id, message, route}
      * @see '/components/notifications/Button'
      */
-    notifications: {}
+    notifications: {},
+
+    myProjects: {}
   },
 
   mutations: {
@@ -52,6 +54,10 @@ const store = new Vuex.Store({
       let notices = Object.assign({}, state.notifications)
       delete notices[id]
       state.notifications = notices
+    },
+
+    setMyProjects (state, projects) {
+      state.myProjects = projects
     }
   }
 })

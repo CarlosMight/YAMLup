@@ -8,6 +8,25 @@
 
     blockquote.error(v-if='notifications.syncLocalProjects' v-html='notifications.syncLocalProjects.onPageMessage')
 
+    //- Online Projects
+    //- @TODO Refactor with offline table
+    div(v-if='user.uid && Object.keys(myProjects).length')
+      table
+        thead
+          tr
+            th Title
+            th Created
+            th Updated
+        tbody
+          tr(v-for='(project, id) in myProjects' :key=id)
+            td(@click='gotoProject(id)') {{getProp(project, 'parsed.data.title') || 'Untitled'}}
+            td(@click='gotoProject(id)') {{formatDate(project.created)}}
+            td(@click='gotoProject(id)') {{formatDate(project.updated)}}
+            td.text-right
+              button.edit(@click='editProject(id)') Edit
+              button.error.delete(@click='deleteProject(id)') Delete
+
+    //- Local Projects
     div(v-if='hasLocalProjects')
       p(v-if='autosave')
         router-link(:to='{name: "sandbox"}') You have an active autosave
@@ -38,7 +57,7 @@
       p
         router-link.button.error(:to='{name: "deleteAllProjects"}') Delete all projects
 
-    div(v-else)
+    div(v-if='!hasLocalProjects && !(user.uid && Object.keys(myProjects).length)')
       //- @FIXME Add a nicer message
       blockquote.error
         p Whoops, it looks like you don't have any projects!
@@ -50,6 +69,7 @@
   import TimeAgo from 'timeago.js'
   import firebase from '@/service/firebase'
   import Vue from 'vue'
+  import {get} from 'lodash'
 
   const timeago = TimeAgo()
 
@@ -58,16 +78,17 @@
 
     data () {
       return {
-        projects: lockr.get('localProjects') || {},
+        localProjects: lockr.get('localProjects') || {},
         autosave: lockr.get('autosave') || {}
       }
     },
 
     computed: mapState({
       user: 'user',
+      myProjects: 'myProjects',
       notifications: 'notifications',
       hasLocalProjects () {
-        return Object.keys(this.projects).length || Object.keys(this.autosave).length
+        return Object.keys(this.localProjects).length || Object.keys(this.autosave).length
       }
     }),
 
@@ -82,7 +103,7 @@
         let btn = ev.target
 
         if (!btn.classList.contains('loading')) {
-          let project = this.projects[id]
+          let project = this.localProjects[id]
           const db = firebase.firestore()
 
           btn.classList.add('loading')
@@ -91,19 +112,21 @@
 
           // @TODO catch errors
           db.collection('project').doc(id).set(project, {merge: true}).then(() => {
-            Vue.delete(this.projects, id)
+            Vue.delete(this.localProjects, id)
             btn.classList.remove('loading')
 
-            if (Object.keys(this.projects).length) {
-              lockr.set('localProjects', this.projects)
+            if (Object.keys(this.localProjects).length) {
+              lockr.set('localProjects', this.localProjects)
             } else {
               this.$store.commit('removeNotification', 'syncLocalProjects')
               lockr.rm('localProjects')
-              this.projects = {}
+              this.localProjects = {}
             }
           })
         }
-      }
+      },
+
+      getProp: (obj, path) => get(obj, path)
     }
   }
 </script>
