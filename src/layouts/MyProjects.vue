@@ -92,6 +92,16 @@
       }
     }),
 
+    watch: {
+      user () {
+        if (this.user.uid) this.loadMyProjects()
+      }
+    },
+
+    created () {
+      this.loadMyProjects()
+    },
+
     methods: {
       gotoProject (id) { this.$router.push({name: 'singleProject', params: {id}}) },
       editProject (id) { this.$router.push({name: 'editProject', params: {id}}) },
@@ -126,7 +136,19 @@
         }
       },
 
-      getProp: (obj, path) => get(obj, path)
+      getProp: (obj, path) => get(obj, path),
+
+      loadMyProjects () {
+        if (this.user.uid) {
+          firebase.firestore().collection('project').where('userID', '==', this.user.uid).get().then((snap) => {
+            let projects = {}
+            snap.forEach((doc) => {
+              projects[doc.data().ID] = doc.data()
+            })
+            this.$store.commit('setMyProjects', projects)
+          })
+        }
+      }
     }
   }
 </script>

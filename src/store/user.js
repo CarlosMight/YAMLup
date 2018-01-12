@@ -8,16 +8,6 @@ firebase.auth().onAuthStateChanged(function (user) {
   // @TODO Add a logout message
   if (user) {
     store.commit('setUser', user)
-
-    // @TODO catch errors
-    firebase.firestore().collection('project').where('userID', '==', user.uid).get().then((snap) => {
-      let projects = {}
-      snap.forEach((doc) => {
-        projects[doc.data().ID] = doc.data()
-      })
-
-      store.commit('setMyProjects', projects)
-    })
   } else {
     store.commit('setUser', {})
     localStorage.clear()

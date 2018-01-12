@@ -56,9 +56,7 @@ const store = new Vuex.Store({
       state.notifications = notices
     },
 
-    setMyProjects (state, projects) {
-      state.myProjects = projects
-    }
+    setMyProjects: (state, projects) => { state.myProjects = projects }
   }
 })
 
