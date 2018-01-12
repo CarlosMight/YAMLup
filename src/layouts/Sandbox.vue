@@ -19,6 +19,7 @@
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
   import markdown from '@/util/markdown'
+  import firebase from '@/service/firebase'
   window.matter = matter
 
   require('codemirror/lib/codemirror.css')
@@ -97,7 +98,7 @@
       maybeSave () {
         const projectID = this.projectID
         let projects = lockr.get('projects') || {}
-        projects[this.projectID] = {
+        let project = projects[this.projectID] = {
           ID: this.projectID,
           yaml: this.yaml,
           parsed: this.lastValidParse,
@@ -107,10 +108,21 @@
           username: this.user.uid ? this.user.displayName : 'Anon',
           userID: this.user.uid || 'anon'
         }
-        lockr.set('projects', projects)
         lockr.rm('autosave')
 
-        this.$router.push(`/p/${projectID}`)
+        if (!this.user.uid) {
+          lockr.set('projects', projects)
+          this.$bus.$emit('runNotificationChecks')
+          this.$router.push(`/p/${projectID}`)
+        } else {
+          const db = firebase.firestore()
+
+          // @TODO catch errors
+          db.collection('project').doc(this.projectID).set(project, {merge: true}).then(() => {
+            this.$bus.$emit('runNotificationChecks')
+            this.$router.push(`/p/${projectID}`)
+          })
+        }
       },
 
       maybeNewProject () {

@@ -36,6 +36,7 @@
 
         delete projects[this.$route.params.id]
         lockr.set('projects', projects)
+        this.$bus.$emit('runNotificationChecks')
 
         this.$router.push({name: 'myProjects'})
       },

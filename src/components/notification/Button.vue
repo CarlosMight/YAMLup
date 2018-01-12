@@ -15,15 +15,26 @@
     }),
 
     mounted () {
-      let projects = lockr.get('projects') || {}
-      if (Object.keys(projects).length) {
-        this.$store.commit('addNotification', {
-          id: 'syncLocalProjects',
-          wrap: 'error',
-          message: 'You have unsynced messages! <b>Click here to view them.</b>',
-          onPageMessage: 'You have unsynced messages!',
-          route: {name: 'myProjects'}
-        })
+      this.$bus.$on('runNotificationChecks', this.runNotificationChecks)
+      this.runNotificationChecks()
+    },
+
+    destroyed () {
+      this.$bus.$off('runNotificationChecks', this.runNotificationChecks)
+    },
+
+    methods: {
+      runNotificationChecks () {
+        let projects = lockr.get('projects') || {}
+        if (Object.keys(projects).length) {
+          this.$store.commit('addNotification', {
+            id: 'syncLocalProjects',
+            wrap: 'error',
+            message: 'You have unsynced messages! <b>Click here to view them.</b>',
+            onPageMessage: 'You have unsynced messages!',
+            route: {name: 'myProjects'}
+          })
+        }
       }
     }
   }
