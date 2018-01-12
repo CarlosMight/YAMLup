@@ -8,7 +8,7 @@
 
     blockquote.error(v-if='notifications.syncLocalProjects' v-html='notifications.syncLocalProjects.onPageMessage')
 
-    div(v-if='projects || autosave')
+    div(v-if='hasProjects')
       p(v-if='autosave')
         router-link(:to='{name: "sandbox"}') You have an active autosave
 
@@ -45,9 +45,12 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   import lockr from 'lockr'
   import {mapState} from 'vuex'
   import TimeAgo from 'timeago.js'
+  import firebase from '@/service/firebase'
+
   const timeago = TimeAgo()
 
   export default {
@@ -55,15 +58,18 @@
 
     data () {
       return {
-        projects: lockr.get('projects'),
-        autosave: lockr.get('autosave')
+        projects: lockr.get('projects') || {},
+        autosave: lockr.get('autosave') || {}
       }
     },
 
-    computed: mapState([
-      'user',
-      'notifications'
-    ]),
+    computed: mapState({
+      user: 'user',
+      notifications: 'notifications',
+      hasProjects () {
+        return Object.keys(this.projects).length || Object.keys(this.autosave).length
+      }
+    }),
 
     methods: {
       gotoProject (id) { this.$router.push({name: 'singleProject', params: {id}}) },
@@ -76,7 +82,27 @@
         let btn = ev.target
 
         if (!btn.classList.contains('loading')) {
+          let project = this.projects[id]
+          const db = firebase.firestore()
+
           btn.classList.add('loading')
+          project.username = this.user.displayName
+          project.userID = this.user.uid
+
+          // @TODO catch errors
+          db.collection('project').doc(id).set(project, {merge: true}).then(() => {
+            Vue.delete(this.projects, id)
+            btn.classList.remove('loading')
+
+            Vue.nextTick(() => {
+              if (Object.keys(this.projects)) {
+                lockr.set('projects', this.projects)
+              } else {
+                lockr.rm('projects')
+                this.projects = null
+              }
+            })
+          })
         }
       }
     }

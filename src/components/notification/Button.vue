@@ -15,7 +15,8 @@
     }),
 
     mounted () {
-      if (lockr.get('projects')) {
+      let projects = lockr.get('projects') || {}
+      if (Object.keys(projects).length) {
         this.$store.commit('addNotification', {
           id: 'syncLocalProjects',
           wrap: 'error',

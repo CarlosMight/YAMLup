@@ -14,6 +14,7 @@
 
 <script>
   import matter from 'gray-matter'
+  import {mapState} from 'vuex'
   import {codemirror} from 'vue-codemirror'
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
@@ -69,7 +70,9 @@
       }
     },
 
-    computed: {
+    computed: mapState({
+      user: 'user',
+
       parsed () {
         let yaml
 
@@ -88,7 +91,7 @@
         return this.lastValidParse
       },
       preview () { return markdown.render(this.parsed.content) }
-    },
+    }),
 
     methods: {
       maybeSave () {
@@ -100,7 +103,9 @@
           parsed: this.lastValidParse,
           html: this.preview,
           created: projects[this.projectID] ? projects[this.projectID].created : new Date(),
-          updated: projects[this.projectID] ? new Date() : ''
+          updated: projects[this.projectID] ? new Date() : '',
+          username: this.user.uid ? this.user.displayName : 'Anon',
+          userID: this.user.uid || 'anon'
         }
         lockr.set('projects', projects)
         lockr.rm('autosave')
