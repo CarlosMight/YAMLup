@@ -45,11 +45,11 @@
 </template>
 
 <script>
-  import Vue from 'vue'
   import lockr from 'lockr'
   import {mapState} from 'vuex'
   import TimeAgo from 'timeago.js'
   import firebase from '@/service/firebase'
+  import Vue from 'vue'
 
   const timeago = TimeAgo()
 
@@ -94,14 +94,13 @@
             Vue.delete(this.projects, id)
             btn.classList.remove('loading')
 
-            Vue.nextTick(() => {
-              if (Object.keys(this.projects)) {
-                lockr.set('projects', this.projects)
-              } else {
-                lockr.rm('projects')
-                this.projects = null
-              }
-            })
+            if (Object.keys(this.projects).length) {
+              lockr.set('projects', this.projects)
+            } else {
+              this.$store.commit('removeNotification', 'syncLocalProjects')
+              lockr.rm('projects')
+              this.projects = {}
+            }
           })
         }
       }

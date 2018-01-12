@@ -46,6 +46,12 @@ const store = new Vuex.Store({
      */
     addNotification (state, notification) {
       Vue.set(state.notifications, notification.id, notification)
+    },
+
+    removeNotification (state, id) {
+      let notices = Object.assign({}, state.notifications)
+      delete notices[id]
+      state.notifications = notices
     }
   }
 })
