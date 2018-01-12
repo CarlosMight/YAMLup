@@ -6,6 +6,8 @@
         span {{user.displayName}}'s Projects
       span(v-else) My Projects
 
+    blockquote.error(v-if='notifications.syncLocalProjects' v-html='notifications.syncLocalProjects.onPageMessage')
+
     div(v-if='projects || autosave')
       p(v-if='autosave')
         router-link(:to='{name: "sandbox"}') You have an active autosave
@@ -54,7 +56,8 @@
     },
 
     computed: mapState([
-      'user'
+      'user',
+      'notifications'
     ]),
 
     methods: {

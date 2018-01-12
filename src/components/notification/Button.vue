@@ -1,5 +1,5 @@
 <template lang="pug">
-  router-link.error(v-if='hasNotifications' :to='{name: "notifications"}')
+  router-link.error(v-if='Object.keys(notifications).length' :to='{name: "notifications"}')
     i.icon-bell
 </template>
 
@@ -11,11 +11,7 @@
     name: 'notification-button',
 
     computed: mapState({
-      notifications: 'notifications',
-
-      hasNotifications () {
-        return !!Object.keys(this.notifications.messages).length
-      }
+      notifications: 'notifications'
     }),
 
     mounted () {
@@ -24,6 +20,7 @@
           id: 'syncLocalProjects',
           wrap: 'error',
           message: 'You have unsynced messages! <b>Click here to view them.</b>',
+          onPageMessage: 'You have unsynced messages!',
           route: {name: 'myProjects'}
         })
       }

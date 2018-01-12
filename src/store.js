@@ -14,9 +14,7 @@ const store = new Vuex.Store({
      * - Message objects are in the form {id, message, route}
      * @see '/components/notifications/Button'
      */
-    notifications: {
-      messages: {}
-    }
+    notifications: {}
   },
 
   mutations: {
@@ -47,7 +45,7 @@ const store = new Vuex.Store({
      * }
      */
     addNotification (state, notification) {
-      state.notifications.messages[notification.id] = notification
+      Vue.set(state.notifications, notification.id, notification)
     }
   }
 })
