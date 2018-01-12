@@ -51,7 +51,7 @@
 
       if (this.$route.name === 'editProject') {
         projectID = this.$route.params.id
-        yaml = lockr.get('projects')[projectID].yaml
+        yaml = lockr.get('localProjects')[projectID].yaml
       }
       lockr.set('currentProjectID', projectID)
 
@@ -97,7 +97,7 @@
     methods: {
       maybeSave () {
         const projectID = this.projectID
-        let projects = lockr.get('projects') || {}
+        let projects = lockr.get('localProjects') || {}
         let project = projects[this.projectID] = {
           ID: this.projectID,
           yaml: this.yaml,
@@ -111,7 +111,7 @@
         lockr.rm('autosave')
 
         if (!this.user.uid) {
-          lockr.set('projects', projects)
+          lockr.set('localProjects', projects)
           this.$bus.$emit('runNotificationChecks')
           this.$router.push(`/p/${projectID}`)
         } else {

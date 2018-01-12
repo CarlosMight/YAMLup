@@ -8,7 +8,7 @@
 
     blockquote.error(v-if='notifications.syncLocalProjects' v-html='notifications.syncLocalProjects.onPageMessage')
 
-    div(v-if='hasProjects')
+    div(v-if='hasLocalProjects')
       p(v-if='autosave')
         router-link(:to='{name: "sandbox"}') You have an active autosave
 
@@ -28,7 +28,7 @@
             td(@click='gotoProject(id)') {{formatDate(project.created)}}
             td(@click='gotoProject(id)') {{formatDate(project.updated)}}
             td.text-right
-              button.success(@click='syncProject(id, $event)')
+              button.success(v-if='user.uid' @click='syncProject(id, $event)')
                 i.icon-spinner5.loader
                 span Sync
               button.edit(@click='editProject(id)') Edit
@@ -58,7 +58,7 @@
 
     data () {
       return {
-        projects: lockr.get('projects') || {},
+        projects: lockr.get('localProjects') || {},
         autosave: lockr.get('autosave') || {}
       }
     },
@@ -66,7 +66,7 @@
     computed: mapState({
       user: 'user',
       notifications: 'notifications',
-      hasProjects () {
+      hasLocalProjects () {
         return Object.keys(this.projects).length || Object.keys(this.autosave).length
       }
     }),
@@ -95,10 +95,10 @@
             btn.classList.remove('loading')
 
             if (Object.keys(this.projects).length) {
-              lockr.set('projects', this.projects)
+              lockr.set('localProjects', this.projects)
             } else {
               this.$store.commit('removeNotification', 'syncLocalProjects')
-              lockr.rm('projects')
+              lockr.rm('localProjects')
               this.projects = {}
             }
           })

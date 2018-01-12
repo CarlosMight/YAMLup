@@ -25,13 +25,13 @@
 
     methods: {
       runNotificationChecks () {
-        let projects = lockr.get('projects') || {}
+        let projects = lockr.get('localProjects') || {}
         if (Object.keys(projects).length) {
           this.$store.commit('addNotification', {
             id: 'syncLocalProjects',
             wrap: 'error',
-            message: 'You have unsynced messages! <b>Click here to view them.</b>',
-            onPageMessage: 'You have unsynced messages!',
+            message: 'You have unsynced projects! <b>Click here to view them.</b>',
+            onPageMessage: 'You have unsynced projects!',
             route: {name: 'myProjects'}
           })
         }

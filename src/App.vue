@@ -38,7 +38,7 @@
 
     data () {
       return {
-        logoLink: lockr.get('projects') ? 'myProjects' : 'sandbox'
+        logoLink: lockr.get('localProjects') ? 'myProjects' : 'sandbox'
       }
     },
 

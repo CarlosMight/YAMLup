@@ -8,7 +8,7 @@
   export default {
     name: 'layout-single-project',
     data () {
-      const projects = lockr.get('projects')
+      const projects = lockr.get('localProjects')
       const project = projects ? projects[this.$route.params.id] : {}
       // @FIXME Add a nicer message
       const html = project ? project.html : '<h1>Sorry, this project does not exist.</h1>'

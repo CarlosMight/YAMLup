@@ -1,6 +1,6 @@
 <template lang="pug">
   .container
-    div(v-if='projects')
+    div(v-if='localProjects')
       h1 Delete Project
       blockquote.error
         b WARNING!
@@ -22,7 +22,7 @@
     name: 'layout-delete-all-projects',
 
     data () {
-      const projects = lockr.get('projects')
+      const projects = lockr.get('localProjects')
 
       return {
         projects
@@ -32,7 +32,7 @@
     methods: {
       deleteProject () {
         lockr.rm('autosave')
-        lockr.rm('projects')
+        lockr.rm('localProjects')
         this.$router.push({name: 'myProjects'})
       },
 
