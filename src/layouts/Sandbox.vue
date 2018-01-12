@@ -34,6 +34,21 @@
     name: 'layout-sandbox',
     components: {codemirror},
 
+    created () {
+      // @TODO handle error
+      if (!lockr.get('autosave')) {
+        firebase.firestore().collection('project').doc(this.projectID).get().then((doc) => {
+          if (doc.exists) {
+            this.yaml = doc.data().yaml
+          } else {
+            // @TODO handle error
+            this.yaml = lockr.get('localProjects')[this.projectID].yaml
+          }
+          this.isLoading = false
+        })
+      }
+    },
+
     mounted () {
       this.$refs.editor.cminstance.focus()
       this.$bus.$on('maybeSave', this.maybeSave)
@@ -47,19 +62,19 @@
 
     data () {
       let projectID = lockr.get('currentProjectID') || uuid()
-      let yaml = lockr.get('autosave') || ''
 
       if (this.$route.name === 'editProject') {
         projectID = this.$route.params.id
-        yaml = lockr.get('localProjects')[projectID].yaml
+        this.isLoading = true
       }
       lockr.set('currentProjectID', projectID)
 
       return {
         projectID,
-        yaml,
+        yaml: lockr.get('autosave'),
         errorMessage: false,
         lastValidParse: matter(''),
+        isLoading: false,
         codemirrorOpts: {
           mode: 'yaml-frontmatter',
           base: 'gfm',

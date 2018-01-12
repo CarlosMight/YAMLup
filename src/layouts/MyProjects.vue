@@ -2,7 +2,7 @@
   .container.wide
     h1#title
       span(v-if='user.uid')
-        img( :src='user.photoURL')
+        img(:src='user.photoURL')
         span {{user.displayName}}'s Projects
       span(v-else) My Projects
 
@@ -42,7 +42,7 @@
             th Created
             th Updated
         tbody
-          tr(v-for='(project, id) in projects' :key=id)
+          tr(v-for='(project, id) in localProjects' :key=id)
             td(@click='gotoProject(id)') {{project.parsed.data.title || 'Untitled'}}
             td(@click='gotoProject(id)') {{formatDate(project.created)}}
             td(@click='gotoProject(id)') {{formatDate(project.updated)}}
