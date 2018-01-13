@@ -74,7 +74,7 @@
 
       return {
         projectID,
-        yaml: lockr.get('autosave'),
+        yaml: lockr.get('autosave') || '',
         errorMessage: false,
         lastValidParse: matter(''),
         isLoading: false,

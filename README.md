@@ -40,3 +40,6 @@ I don't anticipate anyone actually building this for some time, so ask for clear
 
 ## Deploying
 Deploy to your server with `firebase deploy`. If you're using our server, you won't be able to deploy so make sure to configure your environment!
+
+## NOTES
+- For some reason, the SASS loader will not pick up changes to sass files when you first `yarn dev`. To fix this, comment out the router and store from `main.js`...my only guess is that there are too many files to watch
