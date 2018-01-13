@@ -39,7 +39,6 @@
       if (this.isEditMode) {
         this.isLoading = true
         Project.loadSingle(this.projectID).then((res) => {
-          console.log('project', res)
           this.isLoading = false
           this.exists = res.exists
           this.yaml = res.project.yaml || ''
