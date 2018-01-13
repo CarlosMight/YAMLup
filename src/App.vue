@@ -6,7 +6,10 @@
           router-link#logo(:to='{name: logoLink}')
             img(src='/static/img/favicon.png' height=40)
         .text-right
-          router-link(to='/my/projects' :class='{active: $route.name === "myProjects"}') My projects
+          notification-button
+          router-link(to='/my/projects' :class='{active: $route.name === "myProjects"}')
+            img.avatar(:src='user.photoURL')
+            span My projects
           button.error(v-if='isButtonVisible("delete")' @click='deleteProject')
             i.icon-bin2
           button.success(v-if='isButtonVisible("edit")' @click='editProject')
@@ -15,22 +18,34 @@
             i.icon-file-empty
           button.success(v-if='$route.meta.canSave' @click='triggerSave')
             i.icon-floppy-disk
-          router-link.success(to='/login') Login
+          router-link.success(v-if='!user.uid' :to='{name: "login"}') Login
+          router-link(v-else :to='{name: "logout"}') Logout
     router-view
 </template>
 
 <script>
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
+  import NotificationButton from '@/components/notification/Button'
+  import {mapState} from 'vuex'
 
   export default {
     name: 'app',
 
+    components: {
+      'notification-button': NotificationButton
+    },
+
     data () {
       return {
-        logoLink: lockr.get('projects') ? 'myProjects' : 'sandbox'
+        logoLink: lockr.get('localProjects') ? 'myProjects' : 'sandbox'
       }
     },
+
+    computed: mapState([
+      'user',
+      'notifications'
+    ]),
 
     methods: {
       isButtonVisible (btnID) {
@@ -104,6 +119,11 @@
         border-bottom: 1px solid $color-bg
         outline: none
 
+        img
+          display: inline-block
+          height: 100%
+          margin-right: $margin-main
+
         &.error
           color: $color-error
           &:hover
@@ -116,6 +136,10 @@
 
         &:hover, &:focus, &.active
           border-color: $color-links
+          &.error
+            border-color: $color-error
+          &.success
+            border-color: $color-success
 
     #logo
       border-bottom: none

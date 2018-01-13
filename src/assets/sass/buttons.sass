@@ -9,6 +9,20 @@ button, .button
   text-decoration: none
   @include contrasted($color-default, #444)
 
+  .loader
+    display: none
+    font-size: 1em
+    pointer-events: none
+
+    + span
+      pointer-events: none
+
+  &.loading
+    .loader
+      display: inline-block
+    span
+      display: none
+
   &.disabled, [disabled]
     opacity: 0.8
 
@@ -31,3 +45,9 @@ button, .button
     @include contrasted($color-success)
     &:hover, &:active
       background: darken($color-success, 8%)
+
+  &.twitter-button
+    background: #0084b4
+    color: #fff
+    &:hover, &:active
+      background: darken(#0084b4, 8%)

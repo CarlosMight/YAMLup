@@ -14,10 +14,12 @@
 
 <script>
   import matter from 'gray-matter'
+  import {mapState} from 'vuex'
   import {codemirror} from 'vue-codemirror'
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
   import markdown from '@/util/markdown'
+  import firebase from '@/service/firebase'
   window.matter = matter
 
   require('codemirror/lib/codemirror.css')
@@ -32,6 +34,21 @@
     name: 'layout-sandbox',
     components: {codemirror},
 
+    created () {
+      // @TODO handle error
+      if (!lockr.get('autosave')) {
+        firebase.firestore().collection('project').doc(this.projectID).get().then((doc) => {
+          if (doc.exists) {
+            this.yaml = doc.data().yaml
+          } else {
+            // @TODO handle error
+            this.yaml = lockr.get('localProjects')[this.projectID].yaml
+          }
+          this.isLoading = false
+        })
+      }
+    },
+
     mounted () {
       this.$refs.editor.cminstance.focus()
       this.$bus.$on('maybeSave', this.maybeSave)
@@ -45,19 +62,19 @@
 
     data () {
       let projectID = lockr.get('currentProjectID') || uuid()
-      let yaml = lockr.get('autosave') || ''
 
       if (this.$route.name === 'editProject') {
         projectID = this.$route.params.id
-        yaml = lockr.get('projects')[projectID].yaml
+        this.isLoading = true
       }
       lockr.set('currentProjectID', projectID)
 
       return {
         projectID,
-        yaml,
+        yaml: lockr.get('autosave'),
         errorMessage: false,
         lastValidParse: matter(''),
+        isLoading: false,
         codemirrorOpts: {
           mode: 'yaml-frontmatter',
           base: 'gfm',
@@ -69,7 +86,9 @@
       }
     },
 
-    computed: {
+    computed: mapState({
+      user: 'user',
+
       parsed () {
         let yaml
 
@@ -88,24 +107,37 @@
         return this.lastValidParse
       },
       preview () { return markdown.render(this.parsed.content) }
-    },
+    }),
 
     methods: {
       maybeSave () {
         const projectID = this.projectID
-        let projects = lockr.get('projects') || {}
-        projects[this.projectID] = {
+        let projects = lockr.get('localProjects') || {}
+        let project = projects[this.projectID] = {
           ID: this.projectID,
           yaml: this.yaml,
           parsed: this.lastValidParse,
           html: this.preview,
           created: projects[this.projectID] ? projects[this.projectID].created : new Date(),
-          updated: projects[this.projectID] ? new Date() : ''
+          updated: projects[this.projectID] ? new Date() : '',
+          username: this.user.uid ? this.user.displayName : 'Anon',
+          userID: this.user.uid || 'anon'
         }
-        lockr.set('projects', projects)
         lockr.rm('autosave')
 
-        this.$router.push(`/p/${projectID}`)
+        if (!this.user.uid) {
+          lockr.set('localProjects', projects)
+          this.$bus.$emit('runNotificationChecks')
+          this.$router.push(`/p/${projectID}`)
+        } else {
+          const db = firebase.firestore()
+
+          // @TODO catch errors
+          db.collection('project').doc(this.projectID).set(project, {merge: true}).then(() => {
+            this.$bus.$emit('runNotificationChecks')
+            this.$router.push(`/p/${projectID}`)
+          })
+        }
       },
 
       maybeNewProject () {
@@ -120,7 +152,7 @@
 <style lang="sass">
   @import "./src/assets/sass/variables"
 
-  .vue-codemirror, .CodeMirror
+  .vue-codemirror, .CodeMirror.CodeMirror-wrap
     height: 100%
     font-size: 13px
 

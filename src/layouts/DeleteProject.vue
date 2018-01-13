@@ -2,7 +2,7 @@
   .container
     div(v-if='project')
       h1 Delete Project
-      blockquote.warning
+      blockquote.error
         b WARNING!
         p
           | Clicking delete here will delete the project.
@@ -22,7 +22,7 @@
     name: 'layout-delete-project',
 
     data () {
-      const projects = lockr.get('projects')
+      const projects = lockr.get('localProjects')
       const project = projects ? projects[this.$route.params.id] : null
 
       return {
@@ -32,10 +32,11 @@
 
     methods: {
       deleteProject () {
-        let projects = lockr.get('projects')
+        let projects = lockr.get('localProjects')
 
         delete projects[this.$route.params.id]
-        lockr.set('projects', projects)
+        lockr.set('localProjects', projects)
+        this.$bus.$emit('runNotificationChecks')
 
         this.$router.push({name: 'myProjects'})
       },

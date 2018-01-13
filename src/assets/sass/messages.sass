@@ -1,3 +1,5 @@
+// Note: the default and .success versions look similar but are different!
+
 blockquote
   margin: 2em 0
   padding-left: $padding-content
@@ -8,22 +10,31 @@ blockquote
   p:last-child
     padding-bottom: 0
 
-  &.warning
-    background: #f8f8f8
-    border-color: $color-error
+  &.error, &.success
     padding: $padding-main
     padding-left: $padding-content
     position: relative
+    background: $color-code-bg
 
     &:before
-      content: '!'
       position: absolute
       top: $padding-main
       left: -.85em
-      background: $color-error
       color: #fff
       width: 1.5em
       height: 1.5em
       border-radius: 1.5em
       text-align: center
       font-weight: bold
+
+  &.error
+    border-color: $color-error
+    &:before
+      content: '!'
+      background: $color-error
+
+  &.success
+    border-color: $color-success
+    &:before
+      content: '✓'
+      background: $color-success
