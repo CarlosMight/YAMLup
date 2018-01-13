@@ -10,29 +10,19 @@ export default {
   loadSingle (postID) {
     return new Promise((resolve, reject) => {
       firebase.firestore().collection('project').doc(postID).get().then((doc) => {
-        // @FIXME Add a nicer message
-        const error404 = '<h1>Sorry, this project does not exist.</h1>'
-        let message = ''
-        let isError = false
+        let projects
+        let project = {}
 
         // Use data from firebase vs locally
         if (doc.exists) {
-          message = doc.data().html
+          project = doc.data()
         } else {
-          const projects = lockr.get('localProjects')
-          const project = projects ? projects[postID] : {}
-
-          if (project && project.html) {
-            message = project.html
-          } else {
-            isError = true
-            message = error404
-          }
+          projects = lockr.get('localProjects')
+          if (projects) project = projects[postID]
         }
 
         resolve({
-          message,
-          isError,
+          project,
           isLocal: !doc.exists
         })
       }).catch((err) => {

@@ -13,22 +13,17 @@
 </template>
 
 <script>
+  /**
+   * The main YAMLup editor
+   * @type {String}
+   */
   import matter from 'gray-matter'
   import {mapState} from 'vuex'
-  import {codemirror} from 'vue-codemirror'
+  import codemirror from '@/setup/codemirror'
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
   import markdown from '@/util/markdown'
   import firebase from '@/service/firebase'
-  window.matter = matter
-
-  require('codemirror/lib/codemirror.css')
-  require('codemirror/mode/yaml-frontmatter/yaml-frontmatter.js')
-  require('codemirror/mode/gfm/gfm.js')
-  require('codemirror/mode/css/css.js')
-  require('codemirror/mode/javascript/javascript.js')
-  require('codemirror/mode/htmlmixed/htmlmixed.js')
-  require('codemirror/keymap/sublime.js')
 
   export default {
     name: 'layout-sandbox',
@@ -159,50 +154,52 @@
     height: 100%
     font-size: 13px
 
-  .panel
-    width: 50%
-    height: 100%
-    float: left
-    position: relative
-    overflow: auto
-
-    &:last-child
-      box-shadow: 0 0 3px rgba(0,0,0,0.35)
-
-    &.has-errors
-      border: 1px solid red
-
-  .error-message
-    position: absolute
-    top: 0
-    left: 0
-    width: 100%
-    height: 100%
-    border: 2px solid $color-text
-    padding: $padding-content
-
-    pre
+  #layout-sandbox
+    .panel
+      width: 50%
+      height: 100%
+      float: left
       position: relative
-      font-size: 1em
-      font-family: $font-mono
-      font-weight: bold
-      color: #fff
+      overflow: auto
 
-    &:before
-      content: ''
-      background: $color-text
-      opacity: 0.9
+      &:last-child
+        box-shadow: 0 0 3px rgba(0,0,0,0.35)
+
+      &.has-errors
+        border: 1px solid red
+
+    .error-message
       position: absolute
       top: 0
       left: 0
       width: 100%
       height: 100%
+      border: 2px solid $color-text
+      padding: $padding-content
+
+      pre
+        position: relative
+        font-size: 1em
+        font-family: $font-mono
+        font-weight: bold
+        color: #fff
+
+      &:before
+        content: ''
+        background: $color-text
+        opacity: 0.9
+        position: absolute
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
 
   @media screen and (max-width: $width-content * 1.5)
-    .panel
-      width: 100%
-      float: none
-      height: 50%
+    #layout-sandbox
+      .panel
+        width: 100%
+        float: none
+        height: 50%
 
-      &:last-child
+        &:last-child
 </style>
