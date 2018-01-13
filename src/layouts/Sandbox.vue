@@ -1,6 +1,6 @@
 <template lang="pug">
   div.full-height(v-if='!isLoading')
-    #layout-sandbox.full-height
+    #layout-sandbox(v-if='exists').full-height
       .panel
         codemirror(
           ref='editor'
@@ -11,6 +11,8 @@
         .error-message(v-if='errorMessage')
           pre {{errorMessage}}
         project-single(:html='preview')
+    .container(v-else)
+      blockquote.error This post does not exist.
   .container(v-else)
     spinner
 </template>
@@ -34,11 +36,14 @@
     components: {codemirror},
 
     created () {
-      if (!lockr.get('autosave')) {
+      if (this.isEditMode) {
         this.isLoading = true
         Project.loadSingle(this.projectID).then((res) => {
+          console.log('project', res)
           this.isLoading = false
+          this.exists = res.exists
           this.yaml = res.project.yaml || ''
+          this.projectID = res.project.ID || uuid()
           this.focusEditor()
         })
       }
@@ -56,20 +61,16 @@
     },
 
     data () {
-      let projectID = lockr.get('currentProjectID') || uuid()
-
-      if (this.$route.name === 'editProject') {
-        projectID = this.$route.params.id
-        this.isLoading = true
-      }
-      lockr.set('currentProjectID', projectID)
-
       return {
-        projectID,
-        yaml: lockr.get('autosave') || '',
+        projectID: this.$route.name === 'editProject' ? this.$route.params.id : uuid(),
+        exists: true,
+        // Used for the preview overlay when there's an error
         errorMessage: false,
+        yaml: lockr.get('autosave') || '',
+        // This is what's actually saved in the autosave, preventing broken loads
         lastValidParse: matter(''),
         isLoading: false,
+        isEditMode: this.$route.name !== 'sandbox',
         codemirrorOpts: {
           mode: 'yaml-frontmatter',
           base: 'gfm',
@@ -87,6 +88,7 @@
       parsed () {
         let yaml
 
+        // Catch yaml front matter errors
         try {
           yaml = matter(this.yaml)
           this.errorMessage = false
@@ -94,6 +96,7 @@
           this.errorMessage = e.message
         }
 
+        // Save good changes to the autosave
         if (!this.errorMessage) {
           this.lastValidParse = yaml
           lockr.set('autosave', this.yaml)
@@ -101,44 +104,67 @@
 
         return this.lastValidParse
       },
+
       preview () { return markdown.render(this.parsed.content) }
     }),
 
     methods: {
       maybeSave () {
-        const projectID = this.projectID
-        let projects = lockr.get('localProjects') || {}
-        let project = projects[this.projectID] = {
+        let project = {
           ID: this.projectID,
           yaml: this.yaml,
           parsed: this.lastValidParse,
           html: this.preview,
-          created: projects[this.projectID] ? projects[this.projectID].created : new Date(),
-          updated: projects[this.projectID] ? new Date() : '',
           username: this.user.uid ? this.user.displayName : 'Anon',
           userID: this.user.uid || 'anon'
         }
-        lockr.rm('autosave')
 
-        if (!this.user.uid) {
-          lockr.set('localProjects', projects)
-          this.$bus.$emit('runNotificationChecks')
-          this.$router.push(`/p/${projectID}`)
+        if (this.isEditMode) {
+          project.created = new Date()
         } else {
-          const db = firebase.firestore()
+          project.updated = new Date()
+        }
 
-          // @TODO catch errors
-          db.collection('project').doc(this.projectID).set(project, {merge: true}).then(() => {
-            this.$bus.$emit('runNotificationChecks')
-            this.$router.push(`/p/${projectID}`)
+        this.saveProject(project)
+      },
+
+      /**
+       * Actually save the project, either to Firebase or localStorage
+       */
+      saveProject (project) {
+        // Save on Firebase
+        if (this.user.uid) {
+          firebase.firestore().collection('project').doc(this.projectID).set(project, {merge: true}).then(() => {
+            this.finishSave()
+          }).catch((err) => {
+            console.error(err)
+            this.$toasted.show('There was an error saving this post.', {type: 'error'})
           })
+        // Save locally
+        } else {
+          let projects = lockr.get('localProjects') || {}
+          projects[project.ID] = project
+          lockr.set('localProjects', projects)
+          this.finishSave()
         }
       },
 
+      /**
+       * Cleans up data and redirects to the post preview
+       */
+      finishSave () {
+        this.$bus.$emit('runNotificationChecks')
+        this.$router.push(`/p/${this.projectID}`)
+        lockr.rm('autosave')
+      },
+
+      /**
+       * Clears everything out
+       */
       maybeNewProject () {
         this.yaml = ''
         this.projectID = uuid()
-        lockr.set('currentProjectID', this.projectID)
+        lockr.rm('autosave')
       },
 
       focusEditor () {

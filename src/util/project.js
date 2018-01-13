@@ -1,5 +1,7 @@
+import Vue from 'vue'
 import firebase from '@/service/firebase'
 import lockr from 'lockr'
+import {size} from 'lodash'
 
 export default {
   /**
@@ -18,16 +20,18 @@ export default {
           project = doc.data()
         } else {
           projects = lockr.get('localProjects')
-          if (projects) project = projects[postID]
+          if (projects) project = projects[postID] || {}
+          console.log(projects, project, postID)
         }
 
         resolve({
           project,
+          exists: !!size(project),
           isLocal: !doc.exists
         })
       }).catch((err) => {
         console.error(err)
-        this.$toasted.show('There was an error getting the post.', {type: 'error'})
+        Vue.$toasted.show('There was an error getting the post.', {type: 'error'})
         reject(err)
       })
     })

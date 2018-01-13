@@ -2,11 +2,11 @@
   div
     spinner(v-if='isLoading')
     div(v-else)
-      .container(v-if='isLocal && !html')
-        blockquote.warning.no-margin <b>Note:</b> This is a local copy.
-
-      .div(v-if='html')
+      .div(v-if='exists')
+        .container(v-if='isLocal')
+          blockquote.warning.no-margin <b>Note:</b> This is a local copy.
         project-single(v-html='html')
+
       .container(v-else)
         h1 Sorry, this project does not exist.
 </template>
@@ -23,6 +23,7 @@
     created () {
       Project.loadSingle(this.$route.params.id).then((res) => {
         this.isLoading = false
+        this.exists = res.exists
         this.html = res.project.html
         this.isLocal = res.isLocal && this.html
       })
@@ -32,7 +33,8 @@
       return {
         isLoading: true,
         isLocal: false,
-        html: ''
+        html: '',
+        exists: false
       }
     }
   }

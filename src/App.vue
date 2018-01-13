@@ -25,7 +25,6 @@
 
 <script>
   import lockr from 'lockr'
-  import uuid from 'uuid/v1'
   import NotificationButton from '@/components/notification/Button'
   import {mapState} from 'vuex'
 
@@ -60,7 +59,6 @@
       triggerSave () { this.$bus.$emit('maybeSave') },
 
       triggerNewProject () {
-        lockr.set('currentProjectID', uuid())
         this.$bus.$emit('maybeNewProject')
         this.$router.push({name: 'sandbox'})
       },
