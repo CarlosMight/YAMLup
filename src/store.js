@@ -21,19 +21,12 @@ const store = new Vuex.Store({
 
   mutations: {
     setUser: (state, user) => (state.user = user),
-    // @TODO Toast success
-    // @TODO Catche error
-    deleteUser (state) {
-      if (state.user.uid) {
-        state.user.delete()
-        state.user = {}
-      }
-    },
     logout (state) {
       state.user = {}
       state.checklist = null
       firebase.auth().signOut()
       localStorage.clear()
+      Vue.$toasted.show("You've been logged out!", {type: 'success'})
     },
 
     /**
