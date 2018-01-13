@@ -8,7 +8,7 @@
         .text-right
           notification-button
           router-link(to='/my/projects' :class='{active: $route.name === "myProjects"}')
-            img.avatar(:src='user.photoURL')
+            img.avatar(v-if='user.uid' :src='user.photoURL')
             span My projects
           button.error(v-if='isButtonVisible("delete")' @click='deleteProject')
             i.icon-bin2

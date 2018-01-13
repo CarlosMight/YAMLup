@@ -1,6 +1,7 @@
 <template lang="pug">
-  router-link.error(v-if='hasNotifications' :to='{name: "notifications"}')
+  router-link.error(v-if='notificationCount' :to='{name: "notifications"}')
     i.icon-bell
+    span.notification-count {{notificationCount}}
 </template>
 
 <script>
@@ -16,7 +17,7 @@
 
     computed: mapState({
       notifications: 'notifications',
-      hasNotifications () { return !!size(this.notifications) }
+      notificationCount () { return size(this.notifications) }
     }),
 
     mounted () {
@@ -55,4 +56,10 @@
 </script>
 
 <style lang="sass">
+  @import "./src/assets/sass/main"
+
+  .notification-count
+    position: absolute
+    font-weight: bold
+    top: 20px
 </style>
