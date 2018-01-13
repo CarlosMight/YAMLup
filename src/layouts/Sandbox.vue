@@ -1,25 +1,29 @@
 <template lang="pug">
-  #layout-sandbox.full-height
-    .panel
-      codemirror(
-        ref='editor'
-        v-model='yaml'
-        :options='codemirrorOpts'
-      )
-    .panel
-      .error-message(v-if='errorMessage')
-        pre {{errorMessage}}
-      project-single(:html='preview')
+  div.full-height(v-if='!isLoading')
+    #layout-sandbox.full-height
+      .panel
+        codemirror(
+          ref='editor'
+          v-model='yaml'
+          :options='codemirrorOpts'
+        )
+      .panel
+        .error-message(v-if='errorMessage')
+          pre {{errorMessage}}
+        project-single(:html='preview')
+  .container(v-else)
+    spinner
 </template>
 
 <script>
   /**
    * The main YAMLup editor
-   * @type {String}
+   * - This is used for both edit and create
    */
   import matter from 'gray-matter'
   import {mapState} from 'vuex'
   import codemirror from '@/setup/codemirror'
+  import Project from '@/util/project'
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
   import markdown from '@/util/markdown'
@@ -30,25 +34,18 @@
     components: {codemirror},
 
     created () {
-      // @TODO handle error
       if (!lockr.get('autosave')) {
-        firebase.firestore().collection('project').doc(this.projectID).get().then((doc) => {
-          if (doc.exists) {
-            this.yaml = doc.data().yaml
-          } else {
-            // @TODO handle error
-            let projects = lockr.get('localProjects')
-            if (projects && projects[this.projectID]) {
-              this.yaml = projects[this.projectID].yaml
-            }
-          }
+        this.isLoading = true
+        Project.loadSingle(this.projectID).then((res) => {
           this.isLoading = false
+          this.yaml = res.project.yaml || ''
+          this.focusEditor()
         })
       }
     },
 
     mounted () {
-      this.$refs.editor.cminstance.focus()
+      this.focusEditor()
       this.$bus.$on('maybeSave', this.maybeSave)
       this.$bus.$on('maybeNewProject', this.maybeNewProject)
     },
@@ -142,6 +139,10 @@
         this.yaml = ''
         this.projectID = uuid()
         lockr.set('currentProjectID', this.projectID)
+      },
+
+      focusEditor () {
+        if (this.$refs.editor) this.$refs.editor.cminstance.focus()
       }
     }
   }
