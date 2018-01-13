@@ -1,5 +1,5 @@
 /**
- * Populates the iframe with the content
+ * Injects HTML into sandboxes
  */
 document.querySelector('body').addEventListener('click', (ev) => {
   let wrap = ev.target

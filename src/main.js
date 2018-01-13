@@ -18,7 +18,9 @@ Object.defineProperties(Vue.prototype, {
   }
 })
 
-Vue.use(Toasted)
+Vue.use(Toasted, {
+  duration: 2500
+})
 
 Vue.component('project-single', PostSingle)
 Vue.component('spinner', Spinner)

@@ -1,7 +1,7 @@
-import Firebase from 'firebase'
+import firebase from 'firebase'
 import firebaseOpts from '@/config/firebase'
 require('firebase/firestore')
 
-Firebase.initializeApp(firebaseOpts)
+firebase.initializeApp(firebaseOpts)
 
-export default Firebase
+export default firebase

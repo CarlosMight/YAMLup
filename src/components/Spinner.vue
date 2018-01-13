@@ -8,6 +8,9 @@
 
 
 <script>
+  /**
+   * Shows a simple spinner with a label underneath
+   */
   export default {
     props: {
       label: {

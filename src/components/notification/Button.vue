@@ -1,17 +1,22 @@
 <template lang="pug">
-  router-link.error(v-if='Object.keys(notifications).length' :to='{name: "notifications"}')
+  router-link.error(v-if='hasNotifications' :to='{name: "notifications"}')
     i.icon-bell
 </template>
 
 <script>
+  /**
+   * This component handles all of the notification logic
+   */
   import {mapState} from 'vuex'
   import lockr from 'lockr'
+  import {size} from 'lodash'
 
   export default {
     name: 'notification-button',
 
     computed: mapState({
-      notifications: 'notifications'
+      notifications: 'notifications',
+      hasNotifications: () => { return Object.keys(this.notifications || {}).length }
     }),
 
     mounted () {
@@ -24,17 +29,26 @@
     },
 
     methods: {
+      /**
+       * The main login
+       * @return {[type]} [description]
+       */
       runNotificationChecks () {
         let projects = lockr.get('localProjects') || {}
-        if (Object.keys(projects).length) {
-          this.$store.commit('addNotification', {
-            id: 'syncLocalProjects',
-            wrap: 'error',
-            message: 'You have unsynced projects! <b>Click here to view them.</b>',
-            onPageMessage: 'You have unsynced projects!',
-            route: {name: 'myProjects'}
-          })
-        }
+        if (size(projects)) this.triggerSyncLocalProjects()
+      },
+
+      /**
+       * Lets the user know that they have unsynced projects
+       */
+      triggerSyncLocalProjects () {
+        this.$store.commit('addNotification', {
+          id: 'syncLocalProjects',
+          wrap: 'error',
+          message: 'You have unsynced projects! <b>Click here to view them.</b>',
+          onPageMessage: 'You have unsynced projects!',
+          route: {name: 'myProjects'}
+        })
       }
     }
   }
