@@ -166,9 +166,7 @@
         lockr.rm('autosave')
       },
 
-      focusEditor () {
-        if (this.$refs.editor) this.$refs.editor.cminstance.focus()
-      }
+      focusEditor () { if (this.$refs.editor) this.$refs.editor.cminstance.focus() }
     }
   }
 </script>

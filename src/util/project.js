@@ -21,7 +21,6 @@ export default {
         } else {
           projects = lockr.get('localProjects')
           if (projects) project = projects[postID] || {}
-          console.log(projects, project, postID)
         }
 
         resolve({

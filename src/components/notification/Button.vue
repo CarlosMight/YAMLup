@@ -16,7 +16,7 @@
 
     computed: mapState({
       notifications: 'notifications',
-      hasNotifications: () => { return Object.keys(this.notifications || {}).length }
+      hasNotifications () { return !!size(this.notifications) }
     }),
 
     mounted () {

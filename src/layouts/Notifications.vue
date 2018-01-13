@@ -2,7 +2,7 @@
   .container.wide
     h1 Notifications
 
-    blockquote.success(v-if='!Object.keys(notifications).length')
+    blockquote.success(v-if='!hasNotifications')
       p All notifications read!
 
     table(v-else)
@@ -13,14 +13,16 @@
 
 <script>
   import {mapState} from 'vuex'
+  import {size} from 'lodash'
 
   export default {
     name: 'layout-notifications',
 
-    computed: mapState([
-      'user',
-      'notifications'
-    ]),
+    computed: mapState({
+      user: 'user',
+      notifications: 'notifications',
+      hasNotifications () { return !!size(this.notifications) }
+    }),
 
     methods: {
       triggerNotification (key) {
