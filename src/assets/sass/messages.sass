@@ -10,7 +10,7 @@ blockquote
   p:last-child
     padding-bottom: 0
 
-  &.error, &.success
+  &.error, &.success, &.warning
     padding: $padding-main
     padding-left: $padding-content
     position: relative
@@ -27,6 +27,7 @@ blockquote
       text-align: center
       font-weight: bold
 
+  // @FIXME use @each
   &.error
     border-color: $color-error
     &:before
@@ -38,3 +39,9 @@ blockquote
     &:before
       content: '✓'
       background: $color-success
+
+  &.warning
+    border-color: $color-warning
+    &:before
+      content: '!'
+      background: $color-warning
