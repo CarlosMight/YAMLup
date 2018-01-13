@@ -152,7 +152,7 @@
 <style lang="sass">
   @import "./src/assets/sass/variables"
 
-  .vue-codemirror, .CodeMirror
+  .vue-codemirror, .CodeMirror.CodeMirror-wrap
     height: 100%
     font-size: 13px
 
