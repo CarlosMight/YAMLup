@@ -42,7 +42,10 @@
             this.yaml = doc.data().yaml
           } else {
             // @TODO handle error
-            this.yaml = lockr.get('localProjects')[this.projectID].yaml
+            let projects = lockr.get('localProjects')
+            if (projects && projects[this.projectID]) {
+              this.yaml = projects[this.projectID].yaml
+            }
           }
           this.isLoading = false
         })
