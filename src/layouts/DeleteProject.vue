@@ -1,44 +1,69 @@
 <template lang="pug">
   .container
-    div(v-if='project')
-      h1 Delete Project
-      blockquote.error
-        b WARNING!
+    div(v-if='!isLoading')
+      div(v-if='projectExists')
+        h1 Delete Project
+        blockquote.error
+          b WARNING!
+          p
+            | Clicking delete here will delete the project.
+            b  There is currently no undo!
         p
-          | Clicking delete here will delete the project.
-          b  There is currently no undo!
-      p
-        button(@click='cancelDelete') Cancel
-        button.error(@click='deleteProject') Delete
+          button(@click='cancelDelete') Cancel
+          button.error(@click='deleteProject') Delete
+      div(v-else)
+        //- @TODO Add a nicer message
+        h1 Sorry, this project does not exist.
     div(v-else)
-      //- @TODO Add a nicer message
-      h1 Sorry, this project does not exist.
+      spinner
 </template>
 
 <script>
   import lockr from 'lockr'
+  import firebase from '@/service/firebase'
 
   export default {
     name: 'layout-delete-project',
 
-    data () {
-      const projects = lockr.get('localProjects')
-      const project = projects ? projects[this.$route.params.id] : null
+    created () {
+      // @TODO handle error
+      firebase.firestore().collection('project').doc(this.$route.params.id).get().then((doc) => {
+        this.projectExists = this.isRemote = doc.exists
+        this.isLoading = false
 
+        if (!doc.exists) {
+          const projects = lockr.get('localProjects')
+          const project = projects ? projects[this.$route.params.id] : null
+          this.projectExists = !!project
+        }
+      })
+    },
+
+    data () {
       return {
-        project
+        isLoading: true,
+        projectExists: false,
+        isRemote: false
       }
     },
 
     methods: {
       deleteProject () {
-        let projects = lockr.get('localProjects')
+        if (this.projectExists && this.isRemote) {
+          // @FIXME refactor, this ref should already be caught above
+          // @TODO add error message
+          firebase.firestore().collection('project').doc(this.$route.params.id).delete().then(() => {
+            this.$bus.$emit('runNotificationChecks')
+            this.$router.push({name: 'myProjects'})
+          })
+        } else {
+          let projects = lockr.get('localProjects')
 
-        delete projects[this.$route.params.id]
-        lockr.set('localProjects', projects)
-        this.$bus.$emit('runNotificationChecks')
-
-        this.$router.push({name: 'myProjects'})
+          delete projects[this.$route.params.id]
+          lockr.set('localProjects', projects)
+          this.$bus.$emit('runNotificationChecks')
+          this.$router.push({name: 'myProjects'})
+        }
       },
 
       cancelDelete () {
