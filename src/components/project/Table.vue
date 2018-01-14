@@ -27,6 +27,12 @@
   import firebase from '@/service/firebase'
   const timeago = TimeAgo()
 
+  /**
+   * Displays a table of projects
+   *
+   * @prop {OBJ} projects An object containing the list of projects to show
+   * @prop {BOL} showSync Shows a sync button for local projects
+   */
   export default {
     name: 'project-table',
 

@@ -8,6 +8,3 @@
     props: ['html']
   }
 </script>
-
-<style lang="sass">
-</style>

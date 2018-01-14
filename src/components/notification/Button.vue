@@ -31,8 +31,7 @@
 
     methods: {
       /**
-       * The main login
-       * @return {[type]} [description]
+       * Checks all the notification types
        */
       runNotificationChecks () {
         let projects = lockr.get('localProjects') || {}
