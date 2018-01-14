@@ -61,6 +61,7 @@
       triggerSave () { this.$bus.$emit('maybeSave') },
 
       triggerNewProject () {
+        lockr.rm('autosave')
         this.$bus.$emit('maybeNewProject')
         this.$router.push({name: 'sandbox'})
       },
