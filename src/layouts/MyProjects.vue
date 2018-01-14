@@ -56,7 +56,7 @@
     computed: mapState({
       user: 'user',
       notifications: 'notifications',
-      hasLocalProjects () { return size(this.localProjects) || size(this.autosave) }
+      hasLocalProjects () { return size(this.localProjects) || (!this.user.uid && size(this.autosave)) }
     }),
 
     watch: {

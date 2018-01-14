@@ -24,7 +24,6 @@ const store = new Vuex.Store({
       state.checklist = null
       firebase.auth().signOut()
       localStorage.clear()
-      Vue.$toasted.show("You've been logged out!", {type: 'success'})
     },
 
     /**
