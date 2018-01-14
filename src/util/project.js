@@ -8,6 +8,7 @@ export default {
    * Loads a single post, first by checking firebase and then locally
    *
    * @param  {STR} postID The postID to load
+   * @return {PRM} returns a promise with the post data
    */
   loadSingle (postID) {
     return new Promise((resolve, reject) => {
@@ -29,8 +30,29 @@ export default {
           isLocal: !doc.exists
         })
       }).catch((err) => {
-        console.error(err)
-        Vue.$toasted.show('There was an error getting the post.', {type: 'error'})
+        Vue.$toasted.show(err.message, {type: 'error'})
+        reject(err)
+      })
+    })
+  },
+
+  /**
+   * Queries the database for a project matching the criteria
+   * @param  {ANY} where The left side of a comparison
+   * @param  {STR} how   How to compare ('==', '<', '>', etc)
+   * @param  {ANY} what  The right side of the comparison
+   * @return {PRM}       Returns a promise containing a set of projects
+   */
+  query (left, compare, right) {
+    return new Promise((resolve, reject) => {
+      firebase.firestore().collection('project').where(left, compare, right).get().then((snap) => {
+        let projects = {}
+        snap.forEach((doc) => {
+          projects[doc.data().ID] = doc.data()
+        })
+        resolve(projects)
+      }).catch((err) => {
+        Vue.$toasted.show(err.message, {type: 'error'})
         reject(err)
       })
     })

@@ -1,18 +1,23 @@
 <template lang="pug">
   div.full-height(v-if='!isLoading')
     #layout-sandbox(v-if='exists').full-height
+      //- Codemirro
       .panel
         codemirror(
           ref='editor'
           v-model='yaml'
-          :options='codemirrorOpts'
-        )
+          :options='codemirrorOpts')
+
+      //- Preview
       .panel
         .error-message(v-if='errorMessage')
           pre {{errorMessage}}
         project-single(:html='preview')
+
+    //- 404
     .container(v-else)
       blockquote.error This post does not exist.
+
   .container(v-else)
     spinner
 </template>
@@ -136,8 +141,7 @@
           firebase.firestore().collection('project').doc(this.projectID).set(project, {merge: true}).then(() => {
             this.finishSave()
           }).catch((err) => {
-            console.error(err)
-            this.$toasted.show('There was an error saving this post.', {type: 'error'})
+            this.$toasted.show(err.message, {type: 'error'})
           })
         // Save locally
         } else {

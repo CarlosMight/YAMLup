@@ -54,8 +54,7 @@
           })
           // @TODO Let's toast the error message (test by turning off connection or temp disabling authorized domains)
           .catch((err) => {
-            console.error(err)
-            this.$toasted.show('An error occured while logging in, please try again.', {type: 'error'})
+            this.$toasted.show(err.message, {type: 'error'})
           })
           .then(() => {
             this.isLoading = false

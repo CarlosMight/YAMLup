@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from '@/App'
 import EventBus from '@/util/bus'
 import PostSingle from '@/components/project/Single'
+import ProjectTable from '@/components/project/Table'
 import Spinner from '@/components/Spinner'
 import Toasted from 'vue-toasted'
 import router from '@/router.js'
@@ -23,6 +24,7 @@ Vue.use(Toasted, {
 })
 
 Vue.component('project-single', PostSingle)
+Vue.component('project-table', ProjectTable)
 Vue.component('spinner', Spinner)
 
 /* eslint-disable no-new */
