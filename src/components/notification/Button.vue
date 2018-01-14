@@ -1,17 +1,23 @@
 <template lang="pug">
-  router-link.error(v-if='Object.keys(notifications).length' :to='{name: "notifications"}')
+  router-link.error(v-if='notificationCount' :to='{name: "notifications"}')
     i.icon-bell
+    span.notification-count {{notificationCount}}
 </template>
 
 <script>
+  /**
+   * This component handles all of the notification logic
+   */
   import {mapState} from 'vuex'
   import lockr from 'lockr'
+  import {size} from 'lodash'
 
   export default {
     name: 'notification-button',
 
     computed: mapState({
-      notifications: 'notifications'
+      notifications: 'notifications',
+      notificationCount () { return size(this.notifications) }
     }),
 
     mounted () {
@@ -24,21 +30,36 @@
     },
 
     methods: {
+      /**
+       * Checks all the notification types
+       */
       runNotificationChecks () {
         let projects = lockr.get('localProjects') || {}
-        if (Object.keys(projects).length) {
-          this.$store.commit('addNotification', {
-            id: 'syncLocalProjects',
-            wrap: 'error',
-            message: 'You have unsynced projects! <b>Click here to view them.</b>',
-            onPageMessage: 'You have unsynced projects!',
-            route: {name: 'myProjects'}
-          })
-        }
+        if (size(projects)) this.triggerSyncLocalProjects()
+        else this.$store.commit('removeNotification', 'syncLocalProjects')
+      },
+
+      /**
+       * Lets the user know that they have unsynced projects
+       */
+      triggerSyncLocalProjects () {
+        this.$store.commit('addNotification', {
+          id: 'syncLocalProjects',
+          wrap: 'error',
+          message: 'You have unsynced projects! <b>Click here to view them.</b>',
+          onPageMessage: 'You have unsynced projects!',
+          route: {name: 'myProjects'}
+        })
       }
     }
   }
 </script>
 
 <style lang="sass">
+  @import "./src/assets/sass/main"
+
+  .notification-count
+    position: absolute
+    font-weight: bold
+    top: 20px
 </style>

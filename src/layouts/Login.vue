@@ -23,17 +23,13 @@
     name: 'layout-login',
 
     watch: {
-      user (user) {
-        if (user && user.uid) {
-          this.$router.push({name: 'myProjects'})
-        }
+      user () {
+        this.maybeGotoMyProjects()
       }
     },
 
     mounted () {
-      if (this.user.uid) {
-        this.$router.push({name: 'myProjects'})
-      }
+      this.maybeGotoMyProjects()
     },
 
     computed: mapState([
@@ -50,19 +46,22 @@
           // @TODO We should make stay connected opt-in: https://firebase.google.com/docs/auth/web/auth-state-persistence
           .then((result) => {
             this.$store.commit('setUser', result.user)
-            this.$router.push({name: 'myProjects'})
+            this.maybeGotoMyProjects()
           })
           // @TODO Let's toast the error message (test by turning off connection or temp disabling authorized domains)
           .catch((err) => {
-            console.error(err)
+            this.$toasted.show(err.message, {type: 'error'})
           })
           .then(() => {
             this.isLoading = false
           })
+      },
+
+      maybeGotoMyProjects () {
+        if (this.user.uid) {
+          this.$router.push({name: 'myProjects'})
+        }
       }
     }
   }
 </script>
-
-<style lang="sass">
-</style>

@@ -3,6 +3,11 @@ let markdown = require('markdown-it')({
   html: true,
   breaks: true,
   linkify: true,
+
+  /**
+   * Wraps the iframe in a preview mask
+   * @TODO customize the cover image
+   */
   highlight (str, lang) {
     switch (lang) {
       case 'html/run':

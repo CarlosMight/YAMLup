@@ -3,7 +3,6 @@ import Router from 'vue-router'
 import LayoutSandbox from '@/layouts/Sandbox'
 import LayoutSingleProject from '@/layouts/SingleProject'
 import LayoutDeleteProject from '@/layouts/DeleteProject'
-import LayoutDeleteAllProjects from '@/layouts/DeleteAllProjects'
 import LayoutMyProjects from '@/layouts/MyProjects'
 import LayoutNotifications from '@/layouts/Notifications'
 import LayoutLogin from '@/layouts/Login'
@@ -46,11 +45,6 @@ export default new Router({
       name: 'notifications',
       path: '/notifications',
       component: LayoutNotifications
-    },
-    {
-      name: 'deleteAllProjects',
-      path: '/my/projects/delete-all',
-      component: LayoutDeleteAllProjects
     },
     {
       name: 'login',

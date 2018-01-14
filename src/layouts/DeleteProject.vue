@@ -1,44 +1,66 @@
 <template lang="pug">
   .container
-    div(v-if='project')
-      h1 Delete Project
-      blockquote.error
-        b WARNING!
+    div(v-if='!isLoading')
+      //- Delete
+      div(v-if='projectExists')
+        h1 Delete Project
+        blockquote.error
+          b WARNING!
+          p Clicking delete here will delete the project. <b>There is currently no undo!</b>
         p
-          | Clicking delete here will delete the project.
-          b  There is currently no undo!
-      p
-        button(@click='cancelDelete') Cancel
-        button.error(@click='deleteProject') Delete
+          button(@click='cancelDelete') Cancel
+          button.error(@click='deleteProject') Delete
+
+      //- 404
+      div(v-else)
+        blockquote.error This project does not exist.
     div(v-else)
-      //- @TODO Add a nicer message
-      h1 Sorry, this project does not exist.
+      spinner
 </template>
 
 <script>
   import lockr from 'lockr'
+  import firebase from '@/service/firebase'
+  import Project from '@/util/project'
 
   export default {
     name: 'layout-delete-project',
 
-    data () {
-      const projects = lockr.get('localProjects')
-      const project = projects ? projects[this.$route.params.id] : null
+    created () {
+      Project.get(this.$route.params.id).then((project) => {
+        this.isLoading = false
+        this.projectExists = project.exists
+        this.isLocal = project.isLocal
+      })
+    },
 
+    data () {
       return {
-        project
+        isLoading: true,
+        projectExists: false,
+        isLocal: false
       }
     },
 
     methods: {
       deleteProject () {
-        let projects = lockr.get('localProjects')
+        if (this.projectExists && !this.isLocal) {
+          firebase.firestore().collection('project').doc(this.$route.params.id).delete().then(() => {
+            this.$toasted.show('Project deleted!', {type: 'success'})
+            this.$bus.$emit('runNotificationChecks')
+            this.$router.push({name: 'myProjects'})
+          }).catch((err) => {
+            this.$toasted.show(err.message, {type: 'error'})
+          })
+        } else {
+          let projects = lockr.get('localProjects')
 
-        delete projects[this.$route.params.id]
-        lockr.set('localProjects', projects)
-        this.$bus.$emit('runNotificationChecks')
-
-        this.$router.push({name: 'myProjects'})
+          delete projects[this.$route.params.id]
+          lockr.set('localProjects', projects)
+          this.$bus.$emit('recheckLocalProjects')
+          this.$bus.$emit('runNotificationChecks')
+          this.$router.push({name: 'myProjects'})
+        }
       },
 
       cancelDelete () {
@@ -48,6 +70,3 @@
     }
   }
 </script>
-
-<style lang="sass">
-</style>

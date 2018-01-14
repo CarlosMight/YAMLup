@@ -2,11 +2,12 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from '@/App'
-import router from '@/router.js'
 import EventBus from '@/util/bus'
 import PostSingle from '@/components/project/Single'
+import ProjectTable from '@/components/project/Table'
 import Spinner from '@/components/Spinner'
 import Toasted from 'vue-toasted'
+import router from '@/router.js'
 import store from '@/store'
 
 require('@/util/sandbox')
@@ -18,9 +19,12 @@ Object.defineProperties(Vue.prototype, {
   }
 })
 
-Vue.use(Toasted)
+Vue.use(Toasted, {
+  duration: 2500
+})
 
 Vue.component('project-single', PostSingle)
+Vue.component('project-table', ProjectTable)
 Vue.component('spinner', Spinner)
 
 /* eslint-disable no-new */

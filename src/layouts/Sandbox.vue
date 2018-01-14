@@ -1,56 +1,59 @@
 <template lang="pug">
-  #layout-sandbox.full-height
-    .panel
-      codemirror(
-        ref='editor'
-        v-model='yaml'
-        :options='codemirrorOpts'
-      )
-    .panel
-      .error-message(v-if='errorMessage')
-        pre {{errorMessage}}
-      project-single(:html='preview')
+  div.full-height(v-if='!isLoading')
+    #layout-sandbox(v-if='exists').full-height
+      //- Codemirro
+      .panel
+        codemirror(
+          ref='editor'
+          v-model='yaml'
+          :options='codemirrorOpts')
+
+      //- Preview
+      .panel
+        .error-message(v-if='errorMessage')
+          pre {{errorMessage}}
+        project-single(:html='preview')
+
+    //- 404
+    .container(v-else)
+      blockquote.error This post does not exist.
+
+  .container(v-else)
+    spinner
 </template>
 
 <script>
+  /**
+   * The main YAMLup editor
+   * - This is used for both edit and create
+   */
   import matter from 'gray-matter'
   import {mapState} from 'vuex'
-  import {codemirror} from 'vue-codemirror'
+  import codemirror from '@/setup/codemirror'
+  import Project from '@/util/project'
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
   import markdown from '@/util/markdown'
-  import firebase from '@/service/firebase'
-  window.matter = matter
-
-  require('codemirror/lib/codemirror.css')
-  require('codemirror/mode/yaml-frontmatter/yaml-frontmatter.js')
-  require('codemirror/mode/gfm/gfm.js')
-  require('codemirror/mode/css/css.js')
-  require('codemirror/mode/javascript/javascript.js')
-  require('codemirror/mode/htmlmixed/htmlmixed.js')
-  require('codemirror/keymap/sublime.js')
 
   export default {
     name: 'layout-sandbox',
     components: {codemirror},
 
     created () {
-      // @TODO handle error
-      if (!lockr.get('autosave')) {
-        firebase.firestore().collection('project').doc(this.projectID).get().then((doc) => {
-          if (doc.exists) {
-            this.yaml = doc.data().yaml
-          } else {
-            // @TODO handle error
-            this.yaml = lockr.get('localProjects')[this.projectID].yaml
-          }
+      if (this.isEditMode) {
+        this.isLoading = true
+        Project.get(this.projectID).then((res) => {
           this.isLoading = false
+          this.exists = res.exists
+          this.yaml = res.project.yaml || ''
+          this.projectID = res.project.ID || uuid()
+          this.focusEditor()
         })
       }
     },
 
     mounted () {
-      this.$refs.editor.cminstance.focus()
+      this.focusEditor()
       this.$bus.$on('maybeSave', this.maybeSave)
       this.$bus.$on('maybeNewProject', this.maybeNewProject)
     },
@@ -61,20 +64,16 @@
     },
 
     data () {
-      let projectID = lockr.get('currentProjectID') || uuid()
-
-      if (this.$route.name === 'editProject') {
-        projectID = this.$route.params.id
-        this.isLoading = true
-      }
-      lockr.set('currentProjectID', projectID)
-
       return {
-        projectID,
-        yaml: lockr.get('autosave'),
+        projectID: this.$route.name === 'editProject' ? this.$route.params.id : uuid(),
+        exists: true,
+        // Used for the preview overlay when there's an error
         errorMessage: false,
+        yaml: lockr.get('autosave') || '',
+        // This is what's actually saved in the autosave, preventing broken loads
         lastValidParse: matter(''),
         isLoading: false,
+        isEditMode: this.$route.name !== 'sandbox',
         codemirrorOpts: {
           mode: 'yaml-frontmatter',
           base: 'gfm',
@@ -92,6 +91,7 @@
       parsed () {
         let yaml
 
+        // Catch yaml front matter errors
         try {
           yaml = matter(this.yaml)
           this.errorMessage = false
@@ -99,6 +99,7 @@
           this.errorMessage = e.message
         }
 
+        // Save good changes to the autosave
         if (!this.errorMessage) {
           this.lastValidParse = yaml
           lockr.set('autosave', this.yaml)
@@ -106,45 +107,71 @@
 
         return this.lastValidParse
       },
+
       preview () { return markdown.render(this.parsed.content) }
     }),
 
     methods: {
+      /**
+       * Prepare the save data
+       */
       maybeSave () {
-        const projectID = this.projectID
-        let projects = lockr.get('localProjects') || {}
-        let project = projects[this.projectID] = {
+        let project = {
           ID: this.projectID,
           yaml: this.yaml,
           parsed: this.lastValidParse,
           html: this.preview,
-          created: projects[this.projectID] ? projects[this.projectID].created : new Date(),
-          updated: projects[this.projectID] ? new Date() : '',
           username: this.user.uid ? this.user.displayName : 'Anon',
           userID: this.user.uid || 'anon'
         }
-        lockr.rm('autosave')
 
-        if (!this.user.uid) {
-          lockr.set('localProjects', projects)
-          this.$bus.$emit('runNotificationChecks')
-          this.$router.push(`/p/${projectID}`)
+        if (this.isEditMode) {
+          project.created = new Date()
         } else {
-          const db = firebase.firestore()
+          project.updated = new Date()
+        }
 
-          // @TODO catch errors
-          db.collection('project').doc(this.projectID).set(project, {merge: true}).then(() => {
-            this.$bus.$emit('runNotificationChecks')
-            this.$router.push(`/p/${projectID}`)
+        this.saveProject(project)
+      },
+
+      /**
+       * Actually save the project, either to Firebase or localStorage
+       */
+      saveProject (project) {
+        // Save on Firebase
+        if (this.user.uid) {
+          Project.save(project).then(() => {
+            this.$toasted.show('Project saved!', {type: 'success'})
+            this.finishSave()
           })
+        // Save locally
+        } else {
+          let projects = lockr.get('localProjects') || {}
+          projects[project.ID] = project
+          lockr.set('localProjects', projects)
+          this.finishSave()
         }
       },
 
+      /**
+       * Cleans up data and redirects to the post preview
+       */
+      finishSave () {
+        this.$bus.$emit('runNotificationChecks')
+        this.$router.push(`/p/${this.projectID}`)
+        lockr.rm('autosave')
+      },
+
+      /**
+       * Clears everything out
+       */
       maybeNewProject () {
         this.yaml = ''
         this.projectID = uuid()
-        lockr.set('currentProjectID', this.projectID)
-      }
+        lockr.rm('autosave')
+      },
+
+      focusEditor () { if (this.$refs.editor) this.$refs.editor.cminstance.focus() }
     }
   }
 </script>
@@ -156,50 +183,52 @@
     height: 100%
     font-size: 13px
 
-  .panel
-    width: 50%
-    height: 100%
-    float: left
-    position: relative
-    overflow: auto
-
-    &:last-child
-      box-shadow: 0 0 3px rgba(0,0,0,0.35)
-
-    &.has-errors
-      border: 1px solid red
-
-  .error-message
-    position: absolute
-    top: 0
-    left: 0
-    width: 100%
-    height: 100%
-    border: 2px solid $color-text
-    padding: $padding-content
-
-    pre
+  #layout-sandbox
+    .panel
+      width: 50%
+      height: 100%
+      float: left
       position: relative
-      font-size: 1em
-      font-family: $font-mono
-      font-weight: bold
-      color: #fff
+      overflow: auto
 
-    &:before
-      content: ''
-      background: $color-text
-      opacity: 0.9
+      &:last-child
+        box-shadow: 0 0 3px rgba(0,0,0,0.35)
+
+      &.has-errors
+        border: 1px solid red
+
+    .error-message
       position: absolute
       top: 0
       left: 0
       width: 100%
       height: 100%
+      border: 2px solid $color-text
+      padding: $padding-content
+
+      pre
+        position: relative
+        font-size: 1em
+        font-family: $font-mono
+        font-weight: bold
+        color: #fff
+
+      &:before
+        content: ''
+        background: $color-text
+        opacity: 0.9
+        position: absolute
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
 
   @media screen and (max-width: $width-content * 1.5)
-    .panel
-      width: 100%
-      float: none
-      height: 50%
+    #layout-sandbox
+      .panel
+        width: 100%
+        float: none
+        height: 50%
 
-      &:last-child
+        &:last-child
 </style>

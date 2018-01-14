@@ -1,5 +1,5 @@
 <template lang="pug">
-  .content-padding.content-width(v-html='html')
+  .container(v-html='html')
 </template>
 
 <script>
@@ -8,6 +8,3 @@
     props: ['html']
   }
 </script>
-
-<style lang="sass">
-</style>

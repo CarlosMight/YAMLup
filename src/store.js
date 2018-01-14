@@ -14,21 +14,11 @@ const store = new Vuex.Store({
      * - Message objects are in the form {id, message, route}
      * @see '/components/notifications/Button'
      */
-    notifications: {},
-
-    myProjects: {}
+    notifications: {}
   },
 
   mutations: {
     setUser: (state, user) => (state.user = user),
-    // @TODO Toast success
-    // @TODO Catche error
-    deleteUser (state) {
-      if (state.user.uid) {
-        state.user.delete()
-        state.user = {}
-      }
-    },
     logout (state) {
       state.user = {}
       state.checklist = null
@@ -54,9 +44,7 @@ const store = new Vuex.Store({
       let notices = Object.assign({}, state.notifications)
       delete notices[id]
       state.notifications = notices
-    },
-
-    setMyProjects: (state, projects) => { state.myProjects = projects }
+    }
   }
 })
 
