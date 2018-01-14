@@ -21,7 +21,7 @@
 <script>
   import Vue from 'vue'
   import TimeAgo from 'timeago.js'
-  import {get} from 'lodash'
+  import {get, size} from 'lodash'
   import {mapState} from 'vuex'
   import lockr from 'lockr'
   import firebase from '@/service/firebase'
@@ -79,7 +79,7 @@
             Vue.delete(this.localProjects, id)
             btn.classList.remove('loading')
 
-            if (Object.keys(this.localProjects).length) {
+            if (size(this.localProjects)) {
               lockr.set('localProjects', this.localProjects)
             } else {
               this.$store.commit('removeNotification', 'syncLocalProjects')

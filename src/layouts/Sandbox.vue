@@ -34,7 +34,6 @@
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
   import markdown from '@/util/markdown'
-  import firebase from '@/service/firebase'
 
   export default {
     name: 'layout-sandbox',
@@ -43,7 +42,7 @@
     created () {
       if (this.isEditMode) {
         this.isLoading = true
-        Project.loadSingle(this.projectID).then((res) => {
+        Project.get(this.projectID).then((res) => {
           this.isLoading = false
           this.exists = res.exists
           this.yaml = res.project.yaml || ''
@@ -113,6 +112,9 @@
     }),
 
     methods: {
+      /**
+       * Prepare the save data
+       */
       maybeSave () {
         let project = {
           ID: this.projectID,
@@ -138,10 +140,9 @@
       saveProject (project) {
         // Save on Firebase
         if (this.user.uid) {
-          firebase.firestore().collection('project').doc(this.projectID).set(project, {merge: true}).then(() => {
+          Project.save(project).then(() => {
+            this.$toasted.show('Project saved!', {type: 'success'})
             this.finishSave()
-          }).catch((err) => {
-            this.$toasted.show(err.message, {type: 'error'})
           })
         // Save locally
         } else {

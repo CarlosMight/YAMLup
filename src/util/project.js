@@ -10,7 +10,7 @@ export default {
    * @param  {STR} postID The postID to load
    * @return {PRM} returns a promise with the post data
    */
-  loadSingle (postID) {
+  get (postID) {
     return new Promise((resolve, reject) => {
       firebase.firestore().collection('project').doc(postID).get().then((doc) => {
         let projects
@@ -30,7 +30,23 @@ export default {
           isLocal: !doc.exists
         })
       }).catch((err) => {
-        Vue.$toasted.show(err.message, {type: 'error'})
+        Vue.toasted.show(err.message, {type: 'error'})
+        reject(err)
+      })
+    })
+  },
+
+  /**
+   * Saves a project
+   * @param  {OBJ} project The project object (must have an ID)
+   * @return {PRM}         The firebase promise
+   */
+  save (project) {
+    return new Promise((resolve, reject) => {
+      firebase.firestore().collection('project').doc(project.ID).set(project, {merge: true}).then(() => {
+        resolve()
+      }).catch((err) => {
+        Vue.toasted.show(err.message, {type: 'error'})
         reject(err)
       })
     })
@@ -52,7 +68,7 @@ export default {
         })
         resolve(projects)
       }).catch((err) => {
-        Vue.$toasted.show(err.message, {type: 'error'})
+        Vue.toasted.show(err.message, {type: 'error'})
         reject(err)
       })
     })

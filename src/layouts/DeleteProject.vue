@@ -27,7 +27,7 @@
     name: 'layout-delete-project',
 
     created () {
-      Project.loadSingle(this.$route.params.id).then((project) => {
+      Project.get(this.$route.params.id).then((project) => {
         this.isLoading = false
         this.projectExists = project.exists
         this.isLocal = project.isLocal

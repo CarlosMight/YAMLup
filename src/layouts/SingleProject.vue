@@ -21,7 +21,7 @@
     name: 'layout-single-project',
 
     created () {
-      Project.loadSingle(this.$route.params.id).then((res) => {
+      Project.get(this.$route.params.id).then((res) => {
         this.isLoading = false
         this.exists = res.exists
         this.html = res.project.html
