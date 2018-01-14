@@ -65,6 +65,7 @@
 
     created () {
       this.loadMyProjects()
+      this.$bus.$on('recheckLocalProjects', this.reloadLocalProjects)
     },
 
     methods: {
@@ -79,6 +80,11 @@
             this.myProjects = projects
           })
         }
+      },
+
+      reloadLocalProjects () {
+        this.localProjects = lockr.get('localProjects') || {}
+        this.loadMyProjects()
       }
     }
   }

@@ -39,6 +39,12 @@
       'user'
     ]),
 
+    data () {
+      return {
+        localProjects: lockr.get('localProjects') || {}
+      }
+    },
+
     methods: {
       gotoProject (id) { this.$router.push({name: 'singleProject', params: {id}}) },
       editProject (id) { this.$router.push({name: 'editProject', params: {id}}) },
@@ -47,19 +53,23 @@
       formatDate: (date) => timeago.format(date),
       getProp: (obj, path) => get(obj, path),
 
+      /**
+       * Syncs a local project with the server, deleting the local copy
+       * @param  {STR} id The project ID
+       * @param  {EVT} ev The click event
+       */
       syncProject (id, ev) {
         let btn = ev.target
 
         if (!btn.classList.contains('loading')) {
           let project = this.localProjects[id]
-          const db = firebase.firestore()
 
           btn.classList.add('loading')
           project.username = this.user.displayName
           project.userID = this.user.uid
 
           // @TODO catch errors
-          db.collection('project').doc(id).set(project, {merge: true}).then(() => {
+          firebase.firestore().collection('project').doc(id).set(project, {merge: true}).then(() => {
             Vue.delete(this.localProjects, id)
             btn.classList.remove('loading')
 
@@ -70,6 +80,8 @@
               lockr.rm('localProjects')
               this.localProjects = {}
             }
+
+            this.$bus.$emit('recheckLocalProjects')
           })
         }
       }
