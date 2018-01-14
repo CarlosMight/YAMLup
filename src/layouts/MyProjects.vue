@@ -26,10 +26,6 @@
 
       project-table(:projects='localProjects' showSync=true)
 
-      h2 Settings
-      p
-        router-link.button.error(:to='{name: "deleteAllProjects"}') Delete all projects
-
     div(v-if='!hasLocalProjects && !(user.uid && Object.keys(myProjects).length)')
       blockquote.warning
         p You don't have any projects yet.
