@@ -37,6 +37,7 @@
       runNotificationChecks () {
         let projects = lockr.get('localProjects') || {}
         if (size(projects)) this.triggerSyncLocalProjects()
+        else this.$store.commit('removeNotification', 'syncLocalProjects')
       },
 
       /**

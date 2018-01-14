@@ -68,6 +68,10 @@
       this.$bus.$on('recheckLocalProjects', this.reloadLocalProjects)
     },
 
+    destroyed () {
+      this.$bus.$off('recheckLocalProjects', this.reloadLocalProjects)
+    },
+
     methods: {
       /**
        * Load the users projects
