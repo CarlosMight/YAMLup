@@ -46,6 +46,7 @@
       deleteProject () {
         if (this.projectExists && !this.isLocal) {
           firebase.firestore().collection('project').doc(this.$route.params.id).delete().then(() => {
+            this.$toasted.show('Project deleted!', {type: 'success'})
             this.$bus.$emit('runNotificationChecks')
             this.$router.push({name: 'myProjects'})
           }).catch((err) => {

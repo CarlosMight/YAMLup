@@ -14,17 +14,19 @@
           button.success(v-if='showSync && user.uid' @click='syncProject(id, $event)')
             i.icon-spinner5.loader
             span Sync
-          button.edit(@click='editProject(id)') Edit
-          button.error.delete(@click='deleteProject(id)') Delete
+          button.edit.success(@click='editProject(id)')
+            i.icon-pencil
+          button.error.delete(@click='deleteProject(id)')
+            i.icon-bin2
 </template>
 
 <script>
   import Vue from 'vue'
   import TimeAgo from 'timeago.js'
-  import {get, size} from 'lodash'
+  import {get} from 'lodash'
   import {mapState} from 'vuex'
   import lockr from 'lockr'
-  import firebase from '@/service/firebase'
+  import Project from '@/util/project'
   const timeago = TimeAgo()
 
   /**
@@ -70,24 +72,19 @@
         if (!btn.classList.contains('loading')) {
           let project = this.localProjects[id]
 
+          // Update with latest user info
           btn.classList.add('loading')
           project.username = this.user.displayName
           project.userID = this.user.uid
 
-          // @TODO catch errors
-          firebase.firestore().collection('project').doc(id).set(project, {merge: true}).then(() => {
+          Project.save(project).then(() => {
             Vue.delete(this.localProjects, id)
             btn.classList.remove('loading')
+            lockr.set('localProjects', this.localProjects)
 
-            if (size(this.localProjects)) {
-              lockr.set('localProjects', this.localProjects)
-            } else {
-              this.$store.commit('removeNotification', 'syncLocalProjects')
-              lockr.rm('localProjects')
-              this.localProjects = {}
-            }
-
+            this.$toasted.show('Project synced!', {type: 'success'})
             this.$bus.$emit('recheckLocalProjects')
+            this.$bus.$emit('runNotificationChecks')
           })
         }
       }
