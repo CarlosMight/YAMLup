@@ -26,7 +26,7 @@
         this.isLoading = false
         this.exists = res.exists
         this.project = res.project
-        this.isLocal = res.isLocal && this.html
+        this.isLocal = res.isLocal
 
         this.setPermissions()
       })
@@ -50,7 +50,7 @@
         let canEdit = false
         let canDelete = false
 
-        if (this.project.userID === this.user.uid) {
+        if (this.project.userID === this.user.uid || this.isLocal) {
           canEdit = true
           canDelete = true
         }

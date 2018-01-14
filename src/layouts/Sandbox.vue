@@ -44,13 +44,18 @@
       if (this.isEditMode) {
         this.isLoading = true
         Project.get(this.projectID).then((res) => {
-          this.isLoading = false
-          this.exists = res.exists
-          this.yaml = res.project.yaml || ''
-          this.projectID = res.project.ID || uuid()
-          this.userID = res.project.userID
-          this.setPermissions()
-          this.focusEditor()
+          if (res.project.userID === this.user.uid || res.isLocal) {
+            this.isLoading = false
+            this.exists = res.exists
+            this.yaml = res.project.yaml
+            this.projectID = res.project.ID
+            this.userID = res.project.userID
+            this.setPermissions()
+            this.focusEditor()
+          } else {
+            this.$toasted.show("Sorry, you don't have permission to edit this proejct.", {type: 'error'})
+            this.$router.push({name: 'singleProject', params: {id: res.project.ID}})
+          }
         })
       } else {
         this.setPermissions()
