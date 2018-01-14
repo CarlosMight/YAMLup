@@ -10,14 +10,14 @@
           router-link(to='/my/projects' :class='{active: $route.name === "myProjects"}')
             img.avatar(v-if='user.uid' :src='user.photoURL')
             span My projects
-          button.error(v-if='isButtonVisible("delete")' @click='deleteProject')
+          button.error(v-if='permission.canDelete' @click='deleteProject')
             i.icon-bin2
-          button.success(v-if='isButtonVisible("edit")' @click='editProject')
+          button.success(v-if='permission.canEdit' @click='editProject')
             i.icon-pencil
+          button.success(v-if='permission.canSave' @click='triggerSave')
+            i.icon-floppy-disk
           button(@click='triggerNewProject')
             i.icon-file-empty
-          button.success(v-if='$route.meta.canSave' @click='triggerSave')
-            i.icon-floppy-disk
           router-link.success(v-if='!user.uid' :to='{name: "login"}') Login
           router-link(v-else :to='{name: "logout"}') Logout
     router-view
@@ -43,19 +43,21 @@
 
     computed: mapState([
       'user',
-      'notifications'
+      'notifications',
+      'permission'
     ]),
 
+    watch: {
+      $route (to, from) {
+        this.$store.commit('clearPermission')
+      }
+    },
+
+    created () {
+      this.$store.commit('clearPermission')
+    },
+
     methods: {
-      isButtonVisible (btnID) {
-        switch (btnID) {
-          case 'delete': return ['singleProject', 'editProject'].includes(this.$route.name)
-          case 'edit': return this.$route.name === 'singleProject'
-        }
-
-        return false
-      },
-
       triggerSave () { this.$bus.$emit('maybeSave') },
 
       triggerNewProject () {

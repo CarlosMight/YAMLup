@@ -34,6 +34,7 @@
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
   import markdown from '@/util/markdown'
+  import PERMISSIONS from '@/config/permissions'
 
   export default {
     name: 'layout-sandbox',
@@ -47,8 +48,12 @@
           this.exists = res.exists
           this.yaml = res.project.yaml || ''
           this.projectID = res.project.ID || uuid()
+          this.userID = res.project.userID
           this.focusEditor()
+          this.setPermissions()
         })
+      } else {
+        this.setPermissions()
       }
     },
 
@@ -66,14 +71,19 @@
     data () {
       return {
         projectID: this.$route.name === 'editProject' ? this.$route.params.id : uuid(),
+        // Only populated for edits
+        userID: null,
+
         exists: true,
         // Used for the preview overlay when there's an error
         errorMessage: false,
         yaml: lockr.get('autosave') || '',
         // This is what's actually saved in the autosave, preventing broken loads
         lastValidParse: matter(''),
+
         isLoading: false,
         isEditMode: this.$route.name !== 'sandbox',
+
         codemirrorOpts: {
           mode: 'yaml-frontmatter',
           base: 'gfm',
@@ -171,7 +181,17 @@
         lockr.rm('autosave')
       },
 
-      focusEditor () { if (this.$refs.editor) this.$refs.editor.cminstance.focus() }
+      focusEditor () { if (this.$refs.editor) this.$refs.editor.cminstance.focus() },
+
+      setPermissions () {
+        let perms = PERMISSIONS.none
+
+        if (!this.isEditMode || (this.userID === this.user.uid || this.userID === 'anon')) perms = PERMISSIONS.all
+        if (!this.isEditMode) perms.canDelete = false
+        perms.canEdit = false
+
+        this.$store.commit('setPermission', perms)
+      }
     }
   }
 </script>

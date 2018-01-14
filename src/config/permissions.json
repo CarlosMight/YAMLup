@@ -1,0 +1,13 @@
+{
+  "none": {
+    "canEdit": false,
+    "canSave": false,
+    "canDelete": false
+  },
+
+  "all": {
+    "canEdit": true,
+    "canSave": true,
+    "canDelete": true
+  }
+}
