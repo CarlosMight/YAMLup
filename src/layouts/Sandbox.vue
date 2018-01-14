@@ -49,18 +49,19 @@
           this.yaml = res.project.yaml || ''
           this.projectID = res.project.ID || uuid()
           this.userID = res.project.userID
-          this.focusEditor()
           this.setPermissions()
+          this.focusEditor()
         })
       } else {
         this.setPermissions()
+        this.focusEditor()
       }
     },
 
     mounted () {
-      this.focusEditor()
       this.$bus.$on('maybeSave', this.maybeSave)
       this.$bus.$on('maybeNewProject', this.maybeNewProject)
+      this.focusEditor()
     },
 
     destroyed () {
@@ -181,7 +182,11 @@
         lockr.rm('autosave')
       },
 
-      focusEditor () { if (this.$refs.editor) this.$refs.editor.cminstance.focus() },
+      focusEditor () {
+        this.$nextTick(() => {
+          if (this.$refs.editor) this.$refs.editor.cminstance.focus()
+        })
+      },
 
       setPermissions () {
         let perms = PERMISSIONS.none
