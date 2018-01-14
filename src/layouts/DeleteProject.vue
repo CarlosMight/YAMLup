@@ -22,17 +22,27 @@
   import lockr from 'lockr'
   import firebase from '@/service/firebase'
   import Project from '@/util/project'
+  import {mapState} from 'vuex'
 
   export default {
     name: 'layout-delete-project',
 
     created () {
-      Project.get(this.$route.params.id).then((project) => {
-        this.isLoading = false
-        this.projectExists = project.exists
-        this.isLocal = project.isLocal
+      Project.get(this.$route.params.id).then((res) => {
+        if (res.project.userID === this.user.uid || res.isLocal) {
+          this.isLoading = false
+          this.projectExists = res.exists
+          this.isLocal = res.isLocal
+        } else {
+          this.$toasted.show("Sorry, you don't have permission to delete this proejct.", {type: 'error'})
+          this.$router.push({name: 'singleProject', params: {id: res.project.ID}})
+        }
       })
     },
+
+    computed: mapState([
+      'user'
+    ]),
 
     data () {
       return {
@@ -56,6 +66,7 @@
           let projects = lockr.get('localProjects')
 
           delete projects[this.$route.params.id]
+          this.$toasted.show('Project deleted!', {type: 'success'})
           lockr.set('localProjects', projects)
           this.$bus.$emit('recheckLocalProjects')
           this.$bus.$emit('runNotificationChecks')

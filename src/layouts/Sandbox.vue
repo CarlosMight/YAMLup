@@ -34,6 +34,7 @@
   import lockr from 'lockr'
   import uuid from 'uuid/v1'
   import markdown from '@/util/markdown'
+  import PERMISSIONS from '@/config/permissions'
 
   export default {
     name: 'layout-sandbox',
@@ -43,19 +44,29 @@
       if (this.isEditMode) {
         this.isLoading = true
         Project.get(this.projectID).then((res) => {
-          this.isLoading = false
-          this.exists = res.exists
-          this.yaml = res.project.yaml || ''
-          this.projectID = res.project.ID || uuid()
-          this.focusEditor()
+          if (res.project.userID === this.user.uid || res.isLocal) {
+            this.isLoading = false
+            this.exists = res.exists
+            this.yaml = res.project.yaml
+            this.projectID = res.project.ID
+            this.userID = res.project.userID
+            this.setPermissions()
+            this.focusEditor()
+          } else {
+            this.$toasted.show("Sorry, you don't have permission to edit this proejct.", {type: 'error'})
+            this.$router.push({name: 'singleProject', params: {id: res.project.ID}})
+          }
         })
+      } else {
+        this.setPermissions()
+        this.focusEditor()
       }
     },
 
     mounted () {
-      this.focusEditor()
       this.$bus.$on('maybeSave', this.maybeSave)
       this.$bus.$on('maybeNewProject', this.maybeNewProject)
+      this.focusEditor()
     },
 
     destroyed () {
@@ -66,14 +77,19 @@
     data () {
       return {
         projectID: this.$route.name === 'editProject' ? this.$route.params.id : uuid(),
+        // Only populated for edits
+        userID: null,
+
         exists: true,
         // Used for the preview overlay when there's an error
         errorMessage: false,
         yaml: lockr.get('autosave') || '',
         // This is what's actually saved in the autosave, preventing broken loads
         lastValidParse: matter(''),
+
         isLoading: false,
         isEditMode: this.$route.name !== 'sandbox',
+
         codemirrorOpts: {
           mode: 'yaml-frontmatter',
           base: 'gfm',
@@ -171,7 +187,21 @@
         lockr.rm('autosave')
       },
 
-      focusEditor () { if (this.$refs.editor) this.$refs.editor.cminstance.focus() }
+      focusEditor () {
+        this.$nextTick(() => {
+          if (this.$refs.editor) this.$refs.editor.cminstance.focus()
+        })
+      },
+
+      setPermissions () {
+        let perms = PERMISSIONS.none
+
+        if (!this.isEditMode || (this.userID === this.user.uid || this.userID === 'anon')) perms = PERMISSIONS.all
+        if (!this.isEditMode) perms.canDelete = false
+        perms.canEdit = false
+
+        this.$store.commit('setPermission', perms)
+      }
     }
   }
 </script>
