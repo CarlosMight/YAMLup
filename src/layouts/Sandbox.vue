@@ -35,6 +35,7 @@
   import uuid from 'uuid/v1'
   import markdown from '@/util/markdown'
   import PERMISSIONS from '@/config/permissions'
+  import {trim} from 'lodash'
 
   export default {
     name: 'layout-sandbox',
@@ -124,10 +125,53 @@
         return this.lastValidParse
       },
 
-      preview () { return markdown.render(this.parsed.content) }
+      /**
+       * Applies the preview, parsing any required frontmatter
+       */
+      preview () {
+        const yaml = this.parsed.data
+        let content = this.parsed.content
+        let prepend = ''
+
+        // Apply prepends
+        if (yaml.title) prepend += `<h1>${yaml.title}</h1>`
+        prepend += this.applyTypes(yaml)
+
+        content = prepend + content
+
+        return markdown.render(content)
+      }
     }),
 
     methods: {
+      /**
+       * Applies content based on the project type
+       *
+       * @param  {OBJ} yaml The YAML data
+       * @return {STR}      The parsed content
+       */
+      applyTypes (yaml) {
+        const types = yaml.type.split(',')
+        let content = ''
+
+        // Apply post meta data
+        if (types) {
+          types.forEach((type) => {
+            switch (trim(type)) {
+              case 'post':
+                let username = this.user.uid ? this.user.displayName : 'Anon'
+
+                content += `<ul class="post-meta">
+                  <li><b>Author:</b> ${username}
+                </ul>`
+                break
+            }
+          })
+        }
+
+        return content
+      },
+
       /**
        * Prepare the save data
        */
