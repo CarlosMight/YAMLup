@@ -22,12 +22,11 @@
 
 <script>
   import Vue from 'vue'
-  import TimeAgo from 'timeago.js'
+  import timeago from '@/setup/timeago'
   import {get} from 'lodash'
   import {mapState} from 'vuex'
   import lockr from 'lockr'
   import Project from '@/util/project'
-  const timeago = TimeAgo()
 
   /**
    * Displays a table of projects

@@ -12,23 +12,8 @@
     ],
     "rewrites": [
       {
-        "source": "/api/getResources",
-        "function": "getResources"
-      },
-      {
         "source": "**",
         "destination": "/index.html"
-      }
-    ],
-    "headers": [
-      {
-        "source": "**/*.html",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "private, max-age=0, no-cache"
-          }
-        ]
       }
     ]
   },

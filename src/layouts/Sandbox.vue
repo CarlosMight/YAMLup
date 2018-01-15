@@ -137,9 +137,7 @@
         if (yaml.title) prepend += `<h1>${yaml.title}</h1>`
         prepend += this.applyTypes(yaml)
 
-        content = prepend + content
-
-        return markdown.render(content)
+        return prepend + markdown.render(content)
       }
     }),
 
@@ -151,6 +149,8 @@
        * @return {STR}      The parsed content
        */
       applyTypes (yaml) {
+        if (!yaml.type) return ''
+
         const types = yaml.type.split(',')
         let content = ''
 
@@ -161,9 +161,16 @@
               case 'post':
                 let username = this.user.uid ? this.user.displayName : 'Anon'
 
+                // Link to the user
+                if (this.user.uid) {
+                  username = `<a href="/u/${this.user.uid}">${username}</a>`
+                }
+
+                // Build out the meta fields
                 content += `<ul class="post-meta">
                   <li><b>Author:</b> ${username}
-                </ul>`
+                  <li><b>Type:</b> ${types}`
+                content += '</ul>'
                 break
             }
           })
