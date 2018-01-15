@@ -56,6 +56,10 @@ const store = new Vuex.Store({
       state.notifications = notices
     },
 
+    clearNotifications (state) {
+      state.notifications = {}
+    },
+
     /**
      * Sets a permission
      *

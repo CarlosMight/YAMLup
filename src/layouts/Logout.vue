@@ -11,6 +11,7 @@
 
     created () {
       this.$store.commit('logout')
+      this.$store.commit('clearNotifications')
     }
   }
 </script>

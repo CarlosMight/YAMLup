@@ -7,10 +7,10 @@
         th Updated
     tbody
       tr(v-for='(project, id) in projects' :key=id)
-        td(@click='gotoProject(id)') {{getProp(project, 'parsed.data.title') || 'Untitled'}}
-        td(@click='gotoProject(id)') {{formatDate(project.created)}}
-        td(@click='gotoProject(id)') {{formatDate(project.updated)}}
-        td.text-right
+        td.cursor-pointer(@click='gotoProject(id)') {{getProp(project, 'parsed.data.title') || 'Untitled'}}
+        td.cursor-pointer(@click='gotoProject(id)') {{formatDate(project.created)}}
+        td.cursor-pointer(@click='gotoProject(id)') {{formatDate(project.updated)}}
+        td.text-right(v-if='!hideEdits')
           button.success(v-if='showSync && user.uid' @click='syncProject(id, $event)')
             i.icon-spinner5.loader
             span Sync
@@ -31,15 +31,17 @@
   /**
    * Displays a table of projects
    *
-   * @prop {OBJ} projects An object containing the list of projects to show
-   * @prop {BOL} showSync Shows a sync button for local projects
+   * @prop {OBJ} projects  An object containing the list of projects to show
+   * @prop {BOL} showSync  Shows a sync button for local projects
+   * @prop {BOL} hideEdits Hides the CRUD column
    */
   export default {
     name: 'project-table',
 
     props: [
       'projects',
-      'showSync'
+      'showSync',
+      'hideEdits'
     ],
 
     computed: mapState([
@@ -90,6 +92,3 @@
     }
   }
 </script>
-
-<style lang="sass">
-</style>

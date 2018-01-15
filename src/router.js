@@ -4,6 +4,7 @@ import LayoutSandbox from '@/layouts/Sandbox'
 import LayoutSingleProject from '@/layouts/SingleProject'
 import LayoutDeleteProject from '@/layouts/DeleteProject'
 import LayoutMyProjects from '@/layouts/MyProjects'
+import LayoutUser from '@/layouts/User'
 import LayoutNotifications from '@/layouts/Notifications'
 import LayoutLogin from '@/layouts/Login'
 import LayoutLogout from '@/layouts/Logout'
@@ -45,6 +46,11 @@ export default new Router({
       name: 'notifications',
       path: '/notifications',
       component: LayoutNotifications
+    },
+    {
+      name: 'user',
+      path: '/u/:id',
+      component: LayoutUser
     },
     {
       name: 'login',
